@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workflow Lucie</title>
+  <style>
+    :root {
+      --bg: #f6f2ee;
+      --panel: rgba(255,255,255,.82);
+      --panel-strong: rgba(255,255,255,.94);
+      --text: #2d2a26;
+      --muted: #6e655c;
+      --line: rgba(114, 92, 72, 0.16);
+      --accent: #c66d3d;
+      --accent-soft: rgba(198, 109, 61, 0.12);
+      --shadow: 0 18px 42px rgba(76, 54, 38, 0.12);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(198,109,61,.12), transparent 26%),
+        radial-gradient(circle at top right, rgba(125,149,115,.12), transparent 24%),
+        linear-gradient(180deg, #fbf8f5 0%, var(--bg) 100%);
+    }
+
+    .shell {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.5fr .9fr;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,.45);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+
+    .hero-main {
+      padding: 28px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.02;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+      max-width: 70ch;
+    }
+
+    .hero-side {
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .quote {
+      margin: 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--accent);
+      background: rgba(255,255,255,.72);
+      border-radius: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.3fr auto auto;
+      gap: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 15px 18px 15px 46px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      font-size: 15px;
+      background: rgba(255,255,255,.8);
+      color: var(--text);
+      outline: none;
+    }
+
+    .search-wrap::before {
+      content: '⌕';
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .pill-row, .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.76);
+      color: var(--text);
+      padding: 11px 15px;
+      border-radius: 999px;
+      font: inherit;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button.active {
+      background: var(--accent);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 8px 18px rgba(198,109,61,.24);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 22px;
+      padding: 18px;
+    }
+
+    .sidebar h2 {
+      margin: 0 0 14px;
+      font-size: 15px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.62);
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255,255,255,.92);
+      border-color: var(--line);
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 22px;
+      scroll-margin-top: 24px;
+    }
+
+    .section.hidden { display: none; }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      margin: 0;
+      font-size: clamp(24px, 3.2vw, 34px);
+    }
+
+    .section-meta {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section-intro {
+      margin-bottom: 16px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .intro-list {
+      margin: 10px 0 0 0;
+      padding-left: 18px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 14px;
+    }
+
+    details.step {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(255,255,255,.74);
+    }
+
+    details.step[open] {
+      background: var(--panel-strong);
+    }
+
+    .step summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .step summary::-webkit-details-marker { display: none; }
+
+    .step-badge {
+      flex: 0 0 auto;
+      min-width: 54px;
+      height: 38px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.35;
+      flex: 1;
+    }
+
+    .step-toggle {
+      color: var(--muted);
+      font-size: 22px;
+      transition: transform .18s ease;
+    }
+
+    details[open] .step-toggle { transform: rotate(45deg); }
+
+    .step-body {
+      padding: 0 20px 20px 20px;
+      color: var(--muted);
+    }
+
+    .step-body p {
+      margin: 0 0 10px;
+      line-height: 1.68;
+    }
+
+    .step-body ul {
+      margin: 10px 0 0 0;
+      padding-left: 20px;
+    }
+
+    .step-body li {
+      margin: 7px 0;
+      line-height: 1.55;
+    }
+
+    mark {
+      background: rgba(255, 215, 122, .7);
+      color: inherit;
+      padding: 0 .12em;
+      border-radius: .2em;
+    }
+
+    .empty-state {
+      display: none;
+      padding: 34px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1120px) {
+      .hero, .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .toolbar { grid-template-columns: 1fr; }
+      .pill-row, .action-row { justify-content: flex-start; }
+    }
+
+    @media (max-width: 720px) {
+      .shell { padding: 16px; }
+      .hero-main, .hero-side, .toolbar, .section { padding: 18px; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .step summary { padding: 16px; }
+      .step-body { padding: 0 16px 16px; }
+      .step-badge { min-width: 46px; height: 34px; }
+      .step-title { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="card hero-main">
+        <div class="eyebrow">Interaktivní workflow</div>
+        <h1 id="doc-title">Workflow Lucie</h1>
+        <p class="lead" id="doc-lead"></p>
+      </div>
+      <aside class="card hero-side">
+        <div class="stat-grid" id="stat-grid"></div>
+        <blockquote class="quote" id="doc-quote"></blockquote>
+      </aside>
+    </section>
+
+    <section class="card toolbar">
+      <label class="search-wrap">
+        <input id="search" type="search" placeholder="Hledat krok, činnost, nástroj nebo klíčové slovo…" />
+      </label>
+      <div class="pill-row" id="filter-pills"></div>
+      <div class="action-row">
+        <button id="expand-all" type="button">Rozbalit vše</button>
+        <button id="collapse-all" type="button">Sbalit vše</button>
+      </div>
+    </section>
+
+    <div class="layout">
+      <aside class="card sidebar">
+        <h2>Rychlá navigace</h2>
+        <nav class="nav-list" id="nav-list"></nav>
+        <div class="footer-note">Tip: Můžeš filtrovat podle směru práce nebo hledat napříč celým workflow.</div>
+      </aside>
+
+      <main class="content">
+        <div class="empty-state card" id="empty-state">Nic jsem nenašel pro zadaný filtr nebo hledání.</div>
+        <div id="sections"></div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const markdown = String.raw`# Workflow Lucie
+
+> Pracovní živý dokument.
+> Cíl: mít na jednom místě sepsané celé workflow a průběžně ho doplňovat a upravovat.
+
+## Hlavní směry práce
+
+1. Nové weby
+2. Správa webů
+3. Šablony
+
+---
+
+## 1. Nové weby
+
+### 1.1 Příchod poptávky
+- Poptávka přijde e-mailem nebo jiným kontaktním kanálem.
+- Základní vyhodnocení:
+  - o jaký typ webu jde,
+  - v jaké je klient fázi,
+  - jaký má rozsah a očekávání,
+  - zda je to vhodná zakázka.
+
+### 1.2 Zaslání dotazníku
+- Klientovi se pošle dotazník.
+- Cíl dotazníku:
+  - pochopit podnikání klienta,
+  - zjistit cíle webu,
+  - zjistit požadované stránky a funkce,
+  - získat podklady pro nacenění.
+
+### 1.3 Vyhodnocení dotazníku
+- Projít odpovědi klienta.
+- Ujasnit si:
+  - strukturu webu,
+  - potřebné podstránky,
+  - technické požadavky,
+  - obsahové podklady,
+  - reálný rozsah práce.
+- Pokud něco chybí, vyžádají se doplňující informace.
+
+### 1.4 Cenová nabídka
+- Na základě dotazníku se připraví cenová nabídka.
+- Nabídka by měla obsahovat:
+  - rozsah práce,
+  - co je a není součástí,
+  - cenu,
+  - případně termín nebo odhad časového rámce.
+
+### 1.5 Potvrzení zájmu
+- Klient potvrdí, že chce spolupráci spustit.
+- Tím se zakázka posouvá do realizační fáze.
+
+### 1.6 Zálohová faktura
+- Vystaví se zálohová faktura.
+- Sleduje se úhrada zálohy.
+- Po zaplacení se pokračuje dál.
+
+### 1.7 Založení projektu a pracovního zázemí
+- Založí se projektové podklady.
+- Typicky:
+  - Milanote nástěnka,
+  - složky pro podklady,
+  - interní přehled zakázky,
+  - případně záznam v pracovním systému.
+
+### 1.8 Moodboard a vizuální směr
+- Připraví se moodboard nebo vizuální směr webu.
+- Cíl:
+  - sladit styl,
+  - ujasnit barevnost,
+  - určit atmosféru značky,
+  - nastavit očekávání před samotnou tvorbou.
+
+### 1.9 Doména a hosting
+- Pokud je potřeba, řeší se:
+  - doména,
+  - hosting,
+  - DNS,
+  - technické zázemí projektu.
+- Může jít o pomoc klientovi nebo o přímé nastavení.
+
+### 1.10 Příprava webového prostředí
+- Založí se web nebo pracovní verze webu.
+- Často probíhá:
+  - instalace WordPressu,
+  - instalace Divi,
+  - nastavení základního prostředí,
+  - případně práce na subdoméně nebo stagingu.
+
+### 1.11 Příprava struktury webu
+- Navrhne se struktura stránek.
+- Typicky:
+  - homepage,
+  - o mně / o nás,
+  - služby,
+  - reference,
+  - kontakt,
+  - prodejní nebo doplňkové stránky dle potřeby.
+
+### 1.12 Tvorba webu
+- Probíhá samotná výroba webu v Divi.
+- Zahrnuje:
+  - stavbu jednotlivých stránek,
+  - práci s texty,
+  - práci s fotografiemi a grafikou,
+  - responsivní úpravy,
+  - ladění vzhledu a funkčnosti.
+
+### 1.13 Zpracování podkladů od klienta
+- Klient dodává texty, fotky, případně další obsah.
+- Podklady se:
+  - třídí,
+  - upravují,
+  - optimalizují,
+  - připravují pro použití na webu.
+
+### 1.14 Finalizace a kontrola
+- Před odevzdáním se kontroluje:
+  - funkčnost stránek,
+  - správnost obsahu,
+  - vzhled na mobilu i desktopu,
+  - formuláře,
+  - odkazy,
+  - základní technické nastavení.
+
+### 1.15 Předání / spuštění webu
+- Web se předá klientovi nebo se publikuje ostrá verze.
+- Součástí může být:
+  - finální schválení,
+  - přesun ze subdomény na ostrou doménu,
+  - drobné doladění po spuštění.
+
+### 1.16 Následná péče
+- Po spuštění mohou přijít:
+  - drobné úpravy,
+  - doplnění obsahu,
+  - technická správa,
+  - další rozvoj webu.
+
+---
+
+## 2. Správa webů
+
+### 2.1 Přijetí požadavku
+- Klient pošle požadavek na úpravu nebo správu.
+- Nejprve se vyjasní:
+  - co přesně se má změnit,
+  - na jakém webu,
+  - zda jde o jednorázovou úpravu nebo pravidelnou správu,
+  - zda jsou k tomu potřeba podklady od klienta.
+
+### 2.2 Kontrola přístupu
+- Ověří se přístup k WordPressu a dalším potřebným nástrojům.
+- Pokud už je přístup uložený, použije se stávající.
+
+### 2.3 Záloha před zásahem
+- Před jakoukoliv úpravou webu se vytvoří záloha.
+- Standard:
+  - přes plugin All in One WP Migration,
+  - uložit do sdílené složky.
+- Teprve po hotové záloze se pokračuje dál.
+
+### 2.4 Realizace úprav
+- Provede se pouze zadaná změna.
+- Cíl:
+  - upravit jen potřebnou část,
+  - nerozbít zbytek webu,
+  - držet se přesného zadání.
+
+### 2.5 Práce s obsahem
+- Běžné činnosti mohou být:
+  - výměna textů,
+  - výměna fotografií,
+  - doplnění sekcí,
+  - úprava rozložení,
+  - přidání videa,
+  - úpravy formulářů,
+  - publikace nového obsahu.
+
+### 2.6 Zpracování dodaných fotek a podkladů
+- Pokud klient pošle fotky nebo jiné soubory:
+  - vyberou se správné podklady,
+  - optimalizuje se velikost,
+  - nahrají se na web,
+  - zkontroluje se jejich zobrazení.
+
+### 2.7 Kontrola po úpravě
+- Po zásahu se zkontroluje:
+  - že změna funguje,
+  - že se nic nerozbilo,
+  - že web vypadá správně na různých zařízeních.
+
+### 2.8 Informování klienta
+- Po dokončení se klientovi potvrdí, že je hotovo.
+- Pokud je potřeba, doplní se stručné shrnutí, co bylo upravené.
+
+### 2.9 Průběžná nebo opakovaná správa
+- U některých webů může správa zahrnovat i opakující se činnosti:
+  - další obsahové úpravy,
+  - technickou údržbu,
+  - průběžné změny dle potřeb klienta.
+
+---
+
+## 3. Šablony
+
+### 3.1 Návrh tématu a cílové skupiny
+- Nejdřív se určí:
+  - pro koho je šablona,
+  - jaký typ podnikání řeší,
+  - jaký problém má šablona klientce usnadnit.
+
+### 3.2 Návrh konceptu šablony
+- Definuje se:
+  - struktura šablony,
+  - jaké stránky bude obsahovat,
+  - jaký bude mít styl,
+  - jaké prvky budou univerzální.
+
+### 3.3 Tvorba designového směru
+- Připraví se vizuální koncept.
+- Řeší se:
+  - barvy,
+  - typografie,
+  - layout,
+  - celkový dojem a použitelnost.
+
+### 3.4 Stavba šablony v Divi / WordPressu
+- Vytváří se samotná šablona.
+- Zahrnuje:
+  - jednotlivé stránky,
+  - sekce,
+  - opakovatelné bloky,
+  - stylování,
+  - mobilní verze.
+
+### 3.5 Nastavení univerzálnosti
+- Šablona musí být připravená tak, aby šla snadno přizpůsobit.
+- Zaměření:
+  - jednoduchá editace textů,
+  - snadná výměna fotek,
+  - přehledná struktura,
+  - použití i pro další klientky.
+
+### 3.6 Testování použitelnosti
+- Kontroluje se:
+  - zda je šablona přehledná,
+  - zda fungují všechny části,
+  - zda se dobře upravuje,
+  - zda je dostatečně praktická pro reálné použití.
+
+### 3.7 Příprava pro prodej nebo předání
+- Připraví se finální verze šablony.
+- Může zahrnovat:
+  - export / balíček,
+  - návod k použití,
+  - ukázkový obsah,
+  - podklady pro prezentaci nebo prodej.
+
+### 3.8 Prodej a následná práce se šablonou
+- Po vydání šablony následuje:
+  - komunikace se zájemci,
+  - případné úpravy podle zpětné vazby,
+  - technická podpora,
+  - další verze nebo odvozené varianty.
+
+---
+
+## 4. Průřezové činnosti napříč všemi směry
+
+Tyto aktivity se opakují napříč novými weby, správou webů i šablonami:
+
+### 4.1 Komunikace
+- komunikace s klienty,
+- vyjasňování zadání,
+- sběr podkladů,
+- potvrzování dokončení práce.
+
+### 4.2 Organizace podkladů
+- ukládání textů, fotek a dokumentů,
+- třídění podkladů,
+- držení přehledu o zakázkách.
+
+### 4.3 Práce s obsahem
+- texty,
+- fotografie,
+- videa,
+- grafické podklady,
+- optimalizace souborů.
+
+### 4.4 Technické nastavení
+- WordPress,
+- Divi,
+- domény,
+- hosting,
+- přístupy,
+- základní technické kontroly.
+
+### 4.5 Finalizace a kontrola kvality
+- kontrola výstupů,
+- kontrola funkčnosti,
+- kontrola vizuálu,
+- kontrola správnosti před předáním.
+
+---
+
+## 5. Co budeme dál doplňovat
+
+Postupně sem můžeme doplnit:
+- přesné kroky u každého typu zakázky,
+- rozhodovací body,
+- které kroky děláš ty a které může dělat Felix,
+- používané nástroje,
+- šablony zpráv a e-mailů,
+- checklisty,
+- časové odhady,
+- opakující se administrativu,
+- návaznost na ClickUp nebo jiný hlavní systém.`;
+
+    function parseMarkdown(md) {
+      const lines = md.split(/\r?\n/);
+      const doc = { title: '', quotes: [], lead: '', sections: [] };
+      let currentSection = null;
+      let currentStep = null;
+
+      const pushParagraph = (text) => {
+        if (!text) return;
+        const target = currentStep || currentSection;
+        if (!target) return;
+        target.content.push({ type: 'p', text });
+      };
+
+      const pushBullet = (text, indent = 0) => {
+        const target = currentStep || currentSection;
+        if (!target) return;
+        const content = target.content;
+        if (indent > 0 && content.length) {
+          const last = content[content.length - 1];
+          if (last.type === 'ul') {
+            const parent = last.items[last.items.length - 1];
+            if (parent) {
+              parent.children ||= [];
+              parent.children.push(text);
+              return;
+            }
+          }
+        }
+        if (content.length && content[content.length - 1].type === 'ul' && indent === 0) {
+          content[content.length - 1].items.push({ text, children: [] });
+        } else {
+          content.push({ type: 'ul', items: [{ text, children: [] }] });
+        }
+      };
+
+      for (const raw of lines) {
+        const line = raw.trimEnd();
+        const trimmed = line.trim();
+        if (!trimmed || trimmed === '---') continue;
+        if (trimmed.startsWith('# ')) {
+          doc.title = trimmed.slice(2).trim();
+          continue;
+        }
+        if (trimmed.startsWith('> ')) {
+          doc.quotes.push(trimmed.slice(2).trim());
+          continue;
+        }
+        if (trimmed.startsWith('## ')) {
+          currentSection = { title: trimmed.slice(3).trim(), content: [], steps: [] };
+          doc.sections.push(currentSection);
+          currentStep = null;
+          continue;
+        }
+        if (trimmed.startsWith('### ')) {
+          currentStep = { title: trimmed.slice(4).trim(), content: [] };
+          currentSection?.steps.push(currentStep);
+          continue;
+        }
+        const ordered = trimmed.match(/^\d+\.\s+(.*)$/);
+        if (ordered && !currentStep) {
+          currentSection?.content.push({ type: 'ol', text: ordered[1].trim() });
+          continue;
+        }
+        const bullet = line.match(/^(\s*)-\s+(.*)$/);
+        if (bullet) {
+          pushBullet(bullet[2].trim(), bullet[1].length);
+          continue;
+        }
+        pushParagraph(trimmed);
+      }
+
+      doc.lead = doc.quotes.join(' ');
+      return doc;
+    }
+
+    function slugify(text) {
+      return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function highlight(text, query) {
+      if (!query) return escapeHtml(text);
+      const safe = escapeHtml(text);
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'ig');
+      return safe.replace(regex, '<mark>$1</mark>');
+    }
+
+    const doc = parseMarkdown(markdown);
+    const titleEl = document.getElementById('doc-title');
+    const leadEl = document.getElementById('doc-lead');
+    const quoteEl = document.getElementById('doc-quote');
+    const statGrid = document.getElementById('stat-grid');
+    const sectionsEl = document.getElementById('sections');
+    const navList = document.getElementById('nav-list');
+    const filterPills = document.getElementById('filter-pills');
+    const searchInput = document.getElementById('search');
+    const emptyState = document.getElementById('empty-state');
+
+    titleEl.textContent = doc.title;
+    leadEl.textContent = doc.lead;
+    quoteEl.textContent = doc.quotes.join(' ');
+
+    const totalSteps = doc.sections.reduce((sum, sec) => sum + sec.steps.length, 0);
+    const stats = [
+      { value: doc.sections.length, label: 'sekcí' },
+      { value: totalSteps, label: 'detailních kroků' },
+      { value: doc.sections.find(s => /^1\./.test(s.title))?.steps.length || 0, label: 'kroků pro nové weby' },
+      { value: doc.sections.find(s => /^2\./.test(s.title))?.steps.length || 0, label: 'kroků pro správu' }
+    ];
+
+    statGrid.innerHTML = stats.map(stat => `
+      <div class="stat">
+        <strong>${stat.value}</strong>
+        <span>${stat.label}</span>
+      </div>
+    `).join('');
+
+    const filters = [
+      { key: 'all', label: 'Vše' },
+      ...doc.sections.map((section, index) => ({ key: `section-${index}`, label: section.title.replace(/^\d+\.\s*/, '') }))
+    ];
+
+    filterPills.innerHTML = filters.map((filter, index) => `
+      <button type="button" class="${index === 0 ? 'active' : ''}" data-filter="${filter.key}">${filter.label}</button>
+    `).join('');
+
+    navList.innerHTML = doc.sections.map((section, index) => `
+      <a class="nav-link" href="#${slugify(section.title)}" data-nav="section-${index}">${section.title}</a>
+    `).join('');
+
+    function renderContentBlocks(content, query) {
+      return content.map(block => {
+        if (block.type === 'p') return `<p>${highlight(block.text, query)}</p>`;
+        if (block.type === 'ol') return `<p>${highlight(block.text, query)}</p>`;
+        if (block.type === 'ul') {
+          const items = block.items.map(item => {
+            const children = item.children?.length
+              ? `<ul>${item.children.map(child => `<li>${highlight(child, query)}</li>`).join('')}</ul>`
+              : '';
+            return `<li>${highlight(item.text, query)}${children}</li>`;
+          }).join('');
+          return `<ul>${items}</ul>`;
+        }
+        return '';
+      }).join('');
+    }
+
+    function renderSections(query = '', filter = 'all') {
+      const normalizedQuery = query.trim().toLowerCase();
+      let visibleCount = 0;
+
+      sectionsEl.innerHTML = doc.sections.map((section, index) => {
+        const haystack = [section.title, ...section.content.map(c => c.text || c.items?.map(i => i.text).join(' ') || ''), ...section.steps.flatMap(step => [step.title, ...step.content.map(c => c.text || c.items?.map(i => i.text).join(' ') || '')])].join(' ').toLowerCase();
+        const matchesFilter = filter === 'all' || filter === `section-${index}`;
+        const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
+        const hidden = !(matchesFilter && matchesQuery);
+        if (!hidden) visibleCount += 1;
+
+        return `
+          <section id="${slugify(section.title)}" class="card section ${hidden ? 'hidden' : ''}" data-filter="section-${index}">
+            <div class="section-head">
+              <div>
+                <div class="section-meta">${section.steps.length} kroků</div>
+                <h2>${highlight(section.title, normalizedQuery)}</h2>
+              </div>
+            </div>
+            ${section.content.length ? `<div class="section-intro">${renderContentBlocks(section.content, normalizedQuery)}</div>` : ''}
+            <div class="steps">
+              ${section.steps.map((step, stepIndex) => `
+                <details class="step" ${normalizedQuery ? 'open' : stepIndex < 2 ? 'open' : ''}>
+                  <summary>
+                    <span class="step-badge">${escapeHtml(step.title.split(' ')[0])}</span>
+                    <span class="step-title">${highlight(step.title.replace(/^\S+\s*/, ''), normalizedQuery)}</span>
+                    <span class="step-toggle">+</span>
+                  </summary>
+                  <div class="step-body">
+                    ${renderContentBlocks(step.content, normalizedQuery)}
+                  </div>
+                </details>
+              `).join('')}
+            </div>
+          </section>
+        `;
+      }).join('');
+
+      emptyState.style.display = visibleCount ? 'none' : 'block';
+      document.querySelectorAll('#filter-pills button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.toggle('active', filter !== 'all' && link.dataset.nav === filter);
+      });
+    }
+
+    let activeFilter = 'all';
+    renderSections();
+
+    filterPills.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-filter]');
+      if (!button) return;
+      activeFilter = button.dataset.filter;
+      renderSections(searchInput.value, activeFilter);
+    });
+
+    searchInput.addEventListener('input', () => renderSections(searchInput.value, activeFilter));
+
+    document.getElementById('expand-all').addEventListener('click', () => {
+      document.querySelectorAll('details.step').forEach(detail => detail.open = true);
+    });
+
+    document.getElementById('collapse-all').addEventListener('click', () => {
+      document.querySelectorAll('details.step').forEach(detail => detail.open = false);
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        const active = document.querySelector(`.nav-link[href="#${id}"]`);
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+        active?.classList.add('active');
+      });
+    }, { rootMargin: '-25% 0px -60% 0px', threshold: 0 });
+
+    document.querySelectorAll('.section').forEach(section => observer.observe(section));
+  </script>
+</body>
+</html>
