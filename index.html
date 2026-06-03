@@ -188,6 +188,107 @@
       box-shadow: 0 8px 18px rgba(198,109,61,.24);
     }
 
+    .resources-panel {
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .resources-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .resources-head h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .resources-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .resource-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    details.resource {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.66);
+      overflow: hidden;
+    }
+
+    details.resource summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    details.resource summary::-webkit-details-marker { display: none; }
+
+    .resource-title-wrap {
+      display: grid;
+      gap: 4px;
+    }
+
+    .resource-title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .resource-meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .resource-body {
+      padding: 0 18px 18px;
+      color: var(--muted);
+    }
+
+    .resource-body pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 12px 0 0;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid var(--line);
+      color: var(--text);
+      font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .resource-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .resource-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(255,255,255,.82);
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+    }
+
     .layout {
       display: grid;
       grid-template-columns: 280px minmax(0, 1fr);
@@ -410,6 +511,16 @@
       </div>
     </section>
 
+    <section class="card resources-panel">
+      <div class="resources-head">
+        <div>
+          <h2>Přílohy a ukázky</h2>
+          <p>Rozklikávací vzory, které doplňují workflow. Můžou sloužit jako rychlý náhled i jako přílohy ke stažení.</p>
+        </div>
+      </div>
+      <div class="resource-list" id="resource-list"></div>
+    </section>
+
     <div class="layout">
       <aside class="card sidebar">
         <h2>Rychlá navigace</h2>
@@ -427,8 +538,24 @@
   <script>
     const markdown = String.raw`# Workflow Lucie
 
-> Přehled hlavních procesů a pracovních kroků.
-> Najdeš tu jednotlivé fáze práce u nových webů, správy webů a šablon na jednom místě.
+> Detailní provozní workflow pro převzetí práce.
+> Dokument je psaný tak, aby se podle něj dokázal zorientovat i člověk, který Lucii nezná a přebírá její práci poprvé.
+
+## Jak tenhle dokument používat
+
+- Cíl: popsat reálný pracovní postup od první poptávky až po předání webu, správu webů a práci na šablonách.
+- Dokument neřeší jen pořadí kroků, ale i **co je cílem kroku**, **co je potřeba zkontrolovat**, **co je výstupem** a **na co si dát pozor**.
+- Pokud se k některému kroku používá konkrétní vzor e-mailu, dotazníku nebo nabídky, je ideální ho přiložit jako přílohu / odkaz k dané části.
+- Výchozí princip: komunikace má být profesionální, lidská, přehledná a bez zbytečných složitostí.
+
+## Kdo je Lucie a jak pracuje
+
+- Lucie je webdesignérka.
+- Tvoří weby hlavně na WordPressu pomocí Divi.
+- Prodává také vlastní Divi šablony.
+- Klade důraz na přehlednost, jednoduchost a praktické řešení.
+- Často kombinuje klientskou komunikaci, strategii, obsah, vizuální směr, technické nastavení i samotnou realizaci webu.
+- Běžně pracuje s klientskými podklady, fotkami, texty, moodboardy, Milanote nástěnkami a WordPressem.
 
 ## Hlavní směry práce
 
@@ -440,258 +567,1065 @@
 
 ## 1. Nové weby
 
+Tahle část popisuje typický proces nové zakázky od první poptávky po spuštění webu a následnou péči.
+
 ### 1.1 Příchod poptávky
-- Poptávka přijde e-mailem nebo jiným kontaktním kanálem.
-- Základní vyhodnocení:
-  - o jaký typ webu jde,
-  - v jaké je klient fázi,
-  - jaký má rozsah a očekávání,
-  - zda je to vhodná zakázka.
 
-### 1.2 Zaslání dotazníku
-- Klientovi se pošle dotazník.
-- Cíl dotazníku:
-  - pochopit podnikání klienta,
-  - zjistit cíle webu,
-  - zjistit požadované stránky a funkce,
-  - získat podklady pro nacenění.
+**Co se děje:**
+- Poptávka přijde e-mailem, formulářem, doporučením nebo jiným kontaktním kanálem.
 
-### 1.3 Vyhodnocení dotazníku
-- Projít odpovědi klienta.
-- Ujasnit si:
-  - strukturu webu,
-  - potřebné podstránky,
-  - technické požadavky,
-  - obsahové podklady,
-  - reálný rozsah práce.
-- Pokud něco chybí, vyžádají se doplňující informace.
+**Cíl kroku:**
+- rychle pochopit, kdo píše,
+- jaký typ webu potřebuje,
+- jestli jde o vhodnou zakázku,
+- jestli dává smysl posunout klienta dál.
 
-### 1.4 Cenová nabídka
-- Na základě dotazníku se připraví cenová nabídka.
-- Nabídka by měla obsahovat:
-  - rozsah práce,
-  - co je a není součástí,
-  - cenu,
-  - případně termín nebo odhad časového rámce.
+**Co zjišťovat hned na začátku:**
+- jaký typ podnikání klient má,
+- jestli už má web a v jakém je stavu,
+- zda chce nový web, redesign nebo jen dílčí pomoc,
+- jaký má přibližný rozsah webu,
+- jestli už má texty, fotky, branding nebo zatím jen nápad,
+- zda má konkrétní termín,
+- jaká je jeho hlavní potřeba nebo problém.
 
-### 1.5 Potvrzení zájmu
-- Klient potvrdí, že chce spolupráci spustit.
-- Tím se zakázka posouvá do realizační fáze.
+**Na co si dát pozor:**
+- jestli je poptávka dost konkrétní,
+- jestli klient chápe rozsah práce,
+- jestli jsou očekávání realistická,
+- jestli jde o klienta, pro kterého je Luciin styl práce vhodný.
 
-### 1.6 Zálohová faktura
-- Vystaví se zálohová faktura.
-- Sleduje se úhrada zálohy.
-- Po zaplacení se pokračuje dál.
+**Výstup:**
+- rozhodnutí, zda klientovi poslat dotazník / navazující otázky.
 
-### 1.7 Založení projektu a pracovního zázemí
-- Založí se projektové podklady.
-- Typicky:
-  - Milanote nástěnka,
-  - složky pro podklady,
-  - interní přehled zakázky,
-  - případně záznam v pracovním systému.
+### 1.2 První odpověď klientovi
 
-### 1.8 Moodboard a vizuální směr
-- Připraví se moodboard nebo vizuální směr webu.
-- Cíl:
-  - sladit styl,
-  - ujasnit barevnost,
-  - určit atmosféru značky,
-  - nastavit očekávání před samotnou tvorbou.
+**Cíl kroku:**
+- potvrdit přijetí poptávky,
+- nastavit příjemný první dojem,
+- posunout klienta do dalšího kroku.
 
-### 1.9 Doména a hosting
-- Pokud je potřeba, řeší se:
-  - doména,
-  - hosting,
-  - DNS,
-  - technické zázemí projektu.
-- Může jít o pomoc klientovi nebo o přímé nastavení.
+**Typický obsah odpovědi:**
+- poděkování za zprávu,
+- stručná reakce, že Lucie poptávku prošla,
+- vysvětlení dalšího kroku,
+- odkaz nebo zaslání dotazníku,
+- případně krátké upřesnění, pokud něco zásadního chybí.
 
-### 1.10 Příprava webového prostředí
-- Založí se web nebo pracovní verze webu.
-- Často probíhá:
-  - instalace WordPressu,
-  - instalace Divi,
-  - nastavení základního prostředí,
-  - případně práce na subdoméně nebo stagingu.
+**Aktuálně používaná logika prvního e-mailu:**
+- poděkovat za zprávu,
+- potvrdit ochotu navázat spolupráci,
+- poslat dotazník jako další krok,
+- vysvětlit, že čím podrobněji klient odpoví, tím lépe,
+- říct, že po obdržení dotazníku vznikne nezávazná cenová nabídka,
+- případně doplnit, že se podle potřeby může domluvit upřesňující hovor,
+- zmínit, že spolu s nabídkou přijde i časový odhad tvorby webu,
+- odkázat klienta na stránku Služby: <https://www.lucietomanova.cz/sluzby/>,
+- uzavřít zprávu otevřeně a přátelsky s výzvou, že se může doptat.
 
-### 1.11 Příprava struktury webu
-- Navrhne se struktura stránek.
-- Typicky:
-  - homepage,
-  - o mně / o nás,
-  - služby,
-  - reference,
-  - kontakt,
-  - prodejní nebo doplňkové stránky dle potřeby.
+**Aktuální vzor prvního e-mailu po poptávce:**
 
-### 1.12 Tvorba webu
-- Probíhá samotná výroba webu v Divi.
-- Zahrnuje:
-  - stavbu jednotlivých stránek,
-  - práci s texty,
-  - práci s fotografiemi a grafikou,
-  - responsivní úpravy,
-  - ladění vzhledu a funkčnosti.
+> Zdravím [jméno],
+>
+> děkuji za zprávu. Ráda s Vámi navážu spolupráci.
+>
+> V příloze posílám dotazník, ve kterém se ptám na základní informace o novém webu. Čím podrobněji na dané otázky odpovíte, tím lépe. Po obdržení dotazníku vytvořím nezávaznou cenovou nabídku nebo si ještě podle potřeby zavoláme pro upřesnění detailů. Zároveň Vám pošlu také časový odhad vytvoření webu. Více informací o spolupráci najdete na mém webu na stránce Služby: <https://www.lucietomanova.cz/sluzby/>.
+>
+> Pokud máte jakékoliv dotazy, klidně pište. Budu se těšit na odpověď a případnou spolupráci. Zatím se mějte fajn!
 
-### 1.13 Zpracování podkladů od klienta
-- Klient dodává texty, fotky, případně další obsah.
-- Podklady se:
-  - třídí,
-  - upravují,
-  - optimalizují,
-  - připravují pro použití na webu.
+**Výstup:**
+- klient ví, co má udělat dál.
 
-### 1.14 Finalizace a kontrola
-- Před odevzdáním se kontroluje:
-  - funkčnost stránek,
-  - správnost obsahu,
-  - vzhled na mobilu i desktopu,
-  - formuláře,
-  - odkazy,
-  - základní technické nastavení.
+### 1.3 Zaslání dotazníku
 
-### 1.15 Předání / spuštění webu
-- Web se předá klientovi nebo se publikuje ostrá verze.
-- Součástí může být:
-  - finální schválení,
-  - přesun ze subdomény na ostrou doménu,
-  - drobné doladění po spuštění.
+**Cíl kroku:**
+- získat podklady pro strategii, rozsah i nacenění.
 
-### 1.16 Následná péče
-- Po spuštění mohou přijít:
-  - drobné úpravy,
-  - doplnění obsahu,
-  - technická správa,
-  - další rozvoj webu.
+**Dotazník by měl zmapovat hlavně:**
+- čím se klient zabývá,
+- pro koho jsou jeho služby / produkty,
+- co má web splnit,
+- jaké stránky nebo sekce bude potřebovat,
+- jaké funkce mají na webu být,
+- jaký styl se mu líbí,
+- co se mu líbí / nelíbí na současném webu,
+- jaké má podklady: texty, fotky, logo, brand,
+- zda už má doménu a hosting,
+- jaký má termín,
+- případná další očekávání.
+
+**Aktuální obsah používaného dotazníku:**
+
+**A. Byznys a nabídka**
+- Jaké služby / produkty nabízíte?
+- Jaké máte výhody oproti konkurenci?
+- Jak dlouho již Váš byznys funguje?
+- Kdo jsou Vaši zákazníci / klienti?
+
+**B. Cíle a budoucnost**
+- Jaké jsou Vaše cíle webové prezentace?
+- Co očekáváte, že web přinese?
+- Jaký je hlavní důvod jeho tvorby?
+- Jaká jsou vedlejší očekávání?
+- Jaká je Vaše představa do budoucna?
+- Plánujete nějaké další online aktivity?
+
+**C. Značka a marketing**
+- Existuje již nějaká vizuální komunikace?
+- Jaké jsou Vaše aktuální marketingové aktivity?
+
+**D. Současný web**
+- Jaká je jeho adresa?
+- Jaké jsou jeho záporné stránky a problémy?
+- Co Vám na něm vyhovuje a co nevyhovuje?
+
+**E. Technické zázemí**
+- Jakého poskytovatele webhostingu používáte?
+- U koho máte zaregistrovanou doménu?
+
+**F. Vizuální preference**
+- Jaké weby se Vám líbí a proč?
+- Jaké weby se Vám nelíbí a proč?
+- Jaký dojem by lidé měli z webu mít?
+- Jaká slova by ho měla vystihovat?
+- Do jakých barev by měl být web laděn?
+- Pokud klient zná konkrétní barvy, přidává i HEX kód.
+- Má klient vybrané písmo?
+
+**G. Rozsah webu a obsah**
+- Kolik přibližně stránek si klient představuje a jaké?
+- Co je pro něj na webu podstatné?
+- Jaké funkce mají být součástí webu?
+- Bude na webu obsah zdarma? Pokud ano, v jaké formě?
+
+**H. Integrace a rozšíření**
+- Je potřeba propojení s analytickými nástroji?
+- Je potřeba propojení s e-mailingovým nástrojem?
+- Přeje si klient vícejazyčný web?
+- Bude chtít založit e-mail na doméně?
+
+**I. Termín a zdroj poptávky**
+- Do kdy musí být web hotový?
+- Odkud se o Lucii dozvěděl?
+- Další poznámky.
+
+**Důležité:**
+- dotazník má pomoct získat dost informací, ale nesmí klienta zahltit,
+- otázky mají být srozumitelné i pro člověka, který webům nerozumí,
+- vyplněný dotazník už sám o sobě často odhalí, jestli klient má jasno, nebo bude potřeba víc vést.
+
+**Jak s dotazníkem pracovat po doručení:**
+- projít odpovědi celé najednou,
+- označit si nejasná nebo chybějící místa,
+- vytáhnout z něj rozsah webu, funkce, vizuální směr a technické potřeby,
+- zapsat si, co bude potřeba ještě doplnit před cenovou nabídkou.
+
+**Výstup:**
+- vyplněný dotazník nebo rozpracovaný soubor odpovědí.
+
+### 1.4 Vyhodnocení dotazníku
+
+**Cíl kroku:**
+- převést klientovy odpovědi do konkrétního zadání.
+
+**Při vyhodnocení je potřeba si ujasnit:**
+- jaká bude hlavní role webu,
+- jaké budou hlavní stránky,
+- co je nutné vytvořit a co je volitelné,
+- jestli klient dodá vše potřebné,
+- jak náročná bude práce s obsahem,
+- jestli bude potřeba pomoci s texty, fotkami nebo strukturou,
+- zda je potřeba řešit technické zázemí.
+
+**Pokud něco chybí:**
+- dopsat si seznam doplňujících otázek,
+- vrátit se ke klientovi pro upřesnění.
+
+**Výstup:**
+- jasnější zadání a podklad pro cenovou nabídku.
+
+### 1.5 Příprava cenové nabídky
+
+**Cíl kroku:**
+- převést rozsah práce do srozumitelné nabídky.
+
+**Nabídka by měla obsahovat:**
+- co přesně je součástí zakázky,
+- co součástí není,
+- počet nebo typ stránek,
+- případné technické položky,
+- co dodává klient a co řeší Lucie,
+- cenový rámec,
+- případně termín nebo odhad harmonogramu,
+- informaci o dalším postupu po odsouhlasení.
+
+**Aktuální struktura cenové nabídky v e-mailu:**
+- poděkování za vyplnění dotazníku,
+- informace, že Lucie prošla odpovědi,
+- odhad ceny a času tvorby webu,
+- shrnutí webu v bodech:
+  - hlavní cíl webu,
+  - design / zvolený dojem a barvy,
+  - rozsah webu,
+  - poznámka, že web bude snadno editovatelný i do budoucna,
+- samostatná část **Cena**,
+- samostatná část **Časový odhad**,
+- samostatná část **Co dál?**,
+- stručné vysvětlení následujících fází spolupráce,
+- vysvětlení, kde se bude web tvořit:
+  - na subdoméně u Lucie,
+  - nebo přímo na ostré verzi s režimem údržby,
+- závěrečné povzbuzení, že se klientka může doptat.
+
+**Co se v nabídce mění podle konkrétní zakázky:**
+- cena,
+- časový odhad,
+- termín možného startu,
+- počet stránek / rozsah webu,
+- hlavní cíl webu,
+- zvolený design / dojem,
+- položky, které nejsou v ceně,
+- jestli se web tvoří na subdoméně, nebo přímo na ostré verzi.
+
+**Důležité zásady:**
+- nabídka má být jasná a bez nejasností,
+- klient musí rozumět tomu, co kupuje,
+- je potřeba oddělit základ zakázky od možných rozšíření,
+- klient má dostat nejen cenu, ale i představu o průběhu spolupráce.
+
+**Výstup:**
+- hotová cenová nabídka připravená k odeslání.
+
+### 1.6 Odeslání cenové nabídky a navazující komunikace
+
+**Cíl kroku:**
+- doručit nabídku a pomoct klientovi udělat informované rozhodnutí.
+
+**Co má zaznít v e-mailu:**
+- stručné shrnutí, na základě čeho nabídka vznikla,
+- co nabídka pokrývá,
+- případně co je důležité si projít,
+- výzva, aby se klient ozval s dotazy,
+- další krok při schválení.
+
+**Aktuálně používaný princip e-mailu s nabídkou:**
+- nejdřív poděkování za dotazník,
+- potom krátké shrnutí, že odpovědi byly prošlé,
+- následně přehled ceny a času,
+- pak vysvětlení, co je v ceně a co v ní není,
+- potom další postup a instrukce pro potvrzení,
+- nakonec popis, jak bude realizace prakticky probíhat.
+
+**Aktuální vzor e-mailu s cenovou nabídkou:**
+
+> Dobrý den, [jméno klientky],
+>
+> ještě jednou děkuji za vyplnění dotazníku a všech informací o novém webu. Prošla jsem si odpovědi a posílám odhad ceny a času tvorby webu.
+>
+> **Nový web:**
+> - Hlavní cíl: [cíl webu]
+> - Design: [zvolené barvy, dojem z webu]
+> - Rozsah webu: [počet stránek]
+> - Weby tvořím tak, aby bylo v budoucnu jednoduché upravit základní informace (text, fotka apod.) bez pokročilých znalostí. Na závěr spolupráce poskytnu videonávody, jak se o web starat a jak s ním pracovat, případně nabízím pravidelnou správu webu.
+>
+> **Cena**
+> Cena za kompletní tvorbu webu na WordPressu je [cena v Kč] (nejsem plátce DPH). Dopředu vyžaduji zálohu 30 % z celkové částky, zbytek fakturuji po odevzdání práce. V ceně je vytvoření webu, zabezpečení, základní optimalizace pro vyhledávače a veškerá potřebná technická nastavení.
+>
+> V ceně není [nastavení e-mailingového nástroje, nastavení prodejního systému - FAPI, SimpleShop apod.]. Pokud máte o nastavení zájem, dejte mi prosím vědět.
+>
+> **Časový odhad**
+> Celkově tvorba webu trvá [doba v týdnech], záleží na vzájemné komunikaci, dodání podkladů apod. Na webu bych mohla po obdržení všech podkladů (texty, fotky, logo) začít pracovat [termín].
+>
+> **Co dál?**
+> Prosím o potvrzení cenové nabídky odpovědí na tento e-mail do 5 dnů od obdržení a zaslání fakturačních údajů. Následně pošlu zálohovou fakturu.
+>
+> V prvním kroku dám dohromady vizuální identitu (font, barvy, moodboard). V dalším kroku vytvořím strukturu webu. Následně spojím vše dohromady a vytvořím první návrh webu. Nasdílím Vám online nástěnku, kde budete moct pozorovat v jaké fázi tvorby se aktuálně nacházíme.
+>
+> Nový web budu tvořit na subdoméně u sebe na serveru (návrh během toho nebude viditelný na internetu), abyste případně mohla stávající web používat do poslední chvíle. Jakmile bude nový web kompletně hotový, přesunu ho na hlavní doménu.
+>
+> [Jméno klientky], pokud si potřebuje cokoliv ujasnit, klidně se ptejte. Budu se těšit na odpověď a případnou spolupráci!
+
+**Na co myslet:**
+- klient může potřebovat doplnění nebo úpravu rozsahu,
+- někdy je potřeba nabídku upravit podle zpětné vazby,
+- je potřeba rozhodnout, zda se web tvoří na subdoméně, nebo rovnou na ostré verzi,
+- pokud už klient web má, je potřeba tomu přizpůsobit i technický popis postupu.
+
+**Výstup:**
+- klient nabídku buď schválí, připomínkuje, nebo spolupráci neotevře.
+
+### 1.7 Potvrzení zájmu
+
+**Cíl kroku:**
+- uzavřít obchodní část a posunout zakázku do realizace.
+
+**Co znamená potvrzení:**
+- klient souhlasí s rozsahem,
+- klient souhlasí s cenou,
+- klient chce začít,
+- je jasné, co následuje dál.
+
+**Co následuje hned po potvrzení spolupráce:**
+- zaslání zálohové faktury,
+- vytvoření sdílené nástěnky v Milanote,
+- vytvoření sdílené složky na Google Drive pro podklady.
+
+**Výstup:**
+- připravuje se zálohová faktura a zahájení projektu.
+
+### 1.8 Zálohová faktura
+
+**Cíl kroku:**
+- formálně spustit zakázku a navázat ji na platbu.
+
+**Co udělat:**
+- vystavit zálohovou fakturu,
+- poslat ji klientovi,
+- zkontrolovat, že dorazila,
+- hlídat úhradu.
+
+**Praktická návaznost:**
+- po potvrzení spolupráce je to první formální krok,
+- zároveň se tím uzavírá obchodní fáze a otevírá realizační část.
+
+**Důležité:**
+- do realizační fáze se přechází až po zaplacení zálohy,
+- pokud se platba zdržuje, je potřeba klienta jemně připomenout.
+
+**Výstup:**
+- uhrazená záloha a zelená pro další kroky.
+
+### 1.9 Založení projektu a pracovního zázemí
+
+**Cíl kroku:**
+- vytvořit jedno místo, kde budou všechny podklady a odkazy.
+
+**Typicky se zakládá:**
+- sdílená Milanote nástěnka pro klienta,
+- sdílená Google Drive složka na podklady,
+- interní přehled zakázky,
+- seznam odkazů a přístupů,
+- případně záznam v pracovním systému.
+
+**Jakou roli mají jednotlivé části:**
+- **Milanote** = přehled spolupráce, vizuální směr a průběh tvorby,
+- **Google Drive** = místo, kam klient nahrává texty, fotky a další podklady,
+- **interní přehled** = provozní řízení zakázky.
+
+**Praktický princip:**
+- všechno důležité musí být rychle dohledatelné,
+- člověk, který projekt převezme, se nesmí spoléhat na dohledávání v historii zpráv,
+- klient má mít jasně oddělené, kam sleduje průběh a kam nahrává materiály.
+
+**Výstup:**
+- připravené pracovní zázemí projektu.
+
+### 1.10 Klientská nástěnka / Milanote
+
+**Cíl kroku:**
+- dát klientovi přehled o průběhu spolupráce a materiálech.
+
+**Na Milanote může být:**
+- přehled jednotlivých fází projektu,
+- checklist, co klient dodává,
+- moodboard,
+- inspirace,
+- odkazy,
+- důležité termíny,
+- poznámky ke struktuře a obsahu.
+
+**Podle aktuální klientské nástěnky tam bývají hlavně tyto bloky:**
+- základní informace o klientovi a webu,
+- kontakt,
+- cena / záloha / doplatek,
+- dokumenty ke stažení,
+- základní informace o novém webu,
+- podklady pro tvorbu webu,
+- sdílená složka Google Drive,
+- co je potřeba zvážit / probrat,
+- technické funkce,
+- moodboard,
+- design jednotlivých stránek,
+- sekce \`Proces tvorby webu\`.
+
+**Praktická role v procesu:**
+- vzniká po potvrzení spolupráce,
+- je sdílená s klientem,
+- klient na ní může průběžně sledovat, v jaké fázi tvorby se projekt nachází.
+
+**Důležité:**
+- klientská nástěnka má být srozumitelná i pro člověka, který není technický,
+- nemá být zahlcená interními provozními detaily.
+
+**Výstup:**
+- klient ví, v jaké je fázi a co se po něm čeká.
+
+### 1.11 Moodboard a vizuální směr
+
+**Cíl kroku:**
+- sladit estetiku a očekávání ještě před samotnou výrobou.
+
+**Řeší se hlavně:**
+- atmosféra značky,
+- barevnost,
+- typografie,
+- styl fotografií,
+- inspirace,
+- dojem, který má web vyvolávat.
+
+**Smysl kroku:**
+- předejít pozdějšímu chaosu v designu,
+- vyjasnit si vkus a hranice,
+- vytvořit základ pro jednotný vizuální jazyk webu.
+
+**Výstup:**
+- odsouhlasený nebo alespoň nasměrovaný vizuální směr.
+
+### 1.12 Doména, hosting a technické zázemí
+
+**Cíl kroku:**
+- zajistit, že web bude mít kde běžet a jak se publikuje.
+
+**Podle projektu se řeší:**
+- doména,
+- hosting,
+- DNS,
+- e-maily,
+- subdoména nebo staging,
+- přístupové údaje,
+- případně převod nebo napojení stávajících služeb.
+
+**Na co si dát pozor:**
+- mít správné přístupy včas,
+- zapsat si, kde je doména a kde hosting,
+- ověřit, kdo má co spravovat: klient vs. Lucie.
+
+**Výstup:**
+- připravené technické prostředí pro realizaci nebo spuštění.
+
+### 1.13 Příprava webového prostředí
+
+**Cíl kroku:**
+- nachystat čistý a funkční základ pro tvorbu.
+
+**Typicky probíhá:**
+- instalace WordPressu,
+- instalace a aktivace Divi,
+- základní nastavení prostředí,
+- vytvoření pracovní verze webu,
+- nastavení základních pluginů,
+- příprava struktury stránek a menu.
+
+**Výstup:**
+- technicky připravený web, na kterém se může začít stavět.
+
+### 1.14 Příprava struktury webu
+
+**Cíl kroku:**
+- přeložit klientovy cíle do konkrétní architektury webu.
+
+**Obvykle se navrhuje:**
+- homepage,
+- o mně / o nás,
+- služby,
+- reference,
+- kontakt,
+- FAQ,
+- prodejní nebo specializované stránky,
+- případně blog, landing page nebo doplňkové sekce.
+
+**Co má být výsledkem:**
+- jasný seznam stránek,
+- pořadí a logika obsahu,
+- rozhodnutí, co je nutné teď a co může vzniknout později.
+
+### 1.15 Sběr a zpracování podkladů od klienta
+
+**Cíl kroku:**
+- připravit všechno, co bude potřeba pro samotnou stavbu.
+
+**Podklady mohou být:**
+- texty,
+- fotky,
+- logo,
+- brand manuál,
+- reference,
+- nabídka služeb,
+- formulace benefitů,
+- technické údaje,
+- kontaktní informace.
+
+**Co se s nimi dělá:**
+- třídění,
+- přejmenování / organizace,
+- kontrola úplnosti,
+- optimalizace,
+- převod do použitelné podoby pro web.
+
+**Na co si dát pozor:**
+- často klient dodá podklady nekompletní nebo chaoticky,
+- je potřeba včas říct, co ještě chybí.
+
+**Výstup:**
+- připravený obsahový základ pro stavbu webu.
+
+**Konkrétní checklist procesu tvorby webu podle Milanote (bez dělení na týdny):**
+
+**Příprava**
+1. klient vyplní dotazník,
+2. vytvoří se cenová nabídka a řeší se proplacení zálohové faktury,
+3. vytvoří se sdílené zázemí: Milanote + Google Drive,
+4. klient dodá podklady: logo, fotky, texty,
+5. řeší se doména a hosting nebo developerská subdoména,
+6. nastaví se režim údržby a zákaz indexace, pokud je to potřeba,
+7. vytvoří se moodboard pro nacítění atmosféry webu,
+8. vytvoří se obsahová struktura webu / architektura.
+
+**Design a vývoj**
+9. vznikne první designový návrh webu,
+10. proběhne zpětná vazba od klienta a konzultace obsahu,
+11. vytvoří se další stránky a naplní se obsahem,
+12. navrhne se stránka 404 a stránka výsledků vyhledávání,
+13. nastaví se favicon.
+
+**Technické nastavení**
+14. instalují se potřebné pluginy: bezpečnost, SEO, záloha apod.,
+15. řeší se GDPR: cookie lišta, zásady ochrany osobních údajů, obchodní podmínky,
+16. nastaví se základní SEO,
+17. doladí se responzivita na desktopu, mobilu a tabletu,
+18. napojí se sledovací kódy: Google Analytics, Facebook Pixel apod.
+
+**Testování a spuštění**
+19. otestuje se funkčnost webu: tlačítka, formuláře a důležité prvky,
+20. proběhne finální schválení a spuštění webu,
+21. pokud je nová doména, řeší se indexace v Google Search Console,
+22. předá se web klientovi: změna hlavního admina, přístupové údaje,
+23. proběhne zaškolení klienta: videonávody nebo domluva správy webu,
+24. uzavře se fakturace a požádá se o referenci.
+
+**Poznámka k použití:**
+- na Milanote je tento proces rozdělený do týdnů,
+- pro interní workflow Lucie je důležité hlavně **pořadí a návaznost kroků**, ne konkrétní týdenní rytmus,
+- v praxi se jde co nejrychleji podle dostupných podkladů a komunikace s klientem.
+
+### 1.16 Tvorba webu
+
+**Cíl kroku:**
+- převést strategii, obsah a vizuální směr do reálného webu.
+
+**Běžný průběh tvorby:**
+- stavba homepage,
+- stavba hlavních podstránek,
+- práce s texty,
+- práce s fotkami a grafikou,
+- skládání sekcí,
+- ladění CTA prvků,
+- průběžné úpravy rozložení,
+- nastavení mobilního zobrazení.
+
+**Praktický princip:**
+- nejdřív se staví funkční kostra,
+- potom se ladí detail,
+- průběžně se kontroluje přehlednost a použitelnost.
+
+**Výstup:**
+- funkční pracovní verze webu.
+
+### 1.17 Průběžné ladění a revize
+
+**Cíl kroku:**
+- dostat web z pracovní verze do finální podoby.
+
+**Sem patří:**
+- úpravy podle zpětné vazby,
+- doladění obsahu,
+- změny v sekcích,
+- výměna nebo doplnění fotek,
+- úpravy detailů v designu,
+- doladění mobilní verze.
+
+**Důležité:**
+- hlídat, aby změny nerozbily celkovou logiku webu,
+- mít jasno, co je drobná úprava a co už je rozšíření scope.
+
+**Výstup:**
+- téměř finální verze webu připravená na kontrolu.
+
+### 1.18 Finalizace a kontrola
+
+**Cíl kroku:**
+- ověřit, že je web připravený na spuštění nebo předání.
+
+**Kontroluje se hlavně:**
+- správnost textů,
+- správnost fotek a grafiky,
+- funkčnost odkazů,
+- formuláře,
+- responzivita,
+- vizuální konzistence,
+- základní technické nastavení,
+- případně favicon, patička, menu, CTA, kontakty.
+
+**Výstup:**
+- finální verze bez zjevných chyb.
+
+### 1.19 Předání / spuštění webu
+
+**Cíl kroku:**
+- dostat web do ostrého provozu.
+
+**Typicky probíhá:**
+- finální schválení klientem,
+- přesun ze subdomény na ostrou doménu,
+- kontrola po spuštění,
+- poslední drobné doladění,
+- předání přístupů nebo instrukcí.
+
+**Co se při předání standardně řeší:**
+- odeslání přístupových údajů klientovi,
+- zaslání odkazu na přihlášení do administrace,
+- vysvětlení práce s uživateli ve WordPressu,
+- upozornění na bezpečné zacházení s přístupy,
+- změna hlavního admina webu a nutnost potvrzení v e-mailu,
+- přidání klienta do Google Analytics,
+- předání návodu ke správě webu,
+- nabídka pravidelné správy,
+- odeslání faktury na doplatek,
+- poprosení o referenci.
+
+**Aktuální logika handover e-mailu:**
+- slavnostně oznámit předání nového webu,
+- dát klientce všechny důležité přístupy a instrukce,
+- vysvětlit základní bezpečnostní pravidla,
+- navést ji na videonávody,
+- nabídnout správu webu jako navazující službu,
+- uzavřít spolupráci fakturací a prosbou o referenci,
+- nechat dveře otevřené pro další dotazy a úpravy.
+
+**Aktuální vzor e-mailu předání webu:**
+
+> Dobrý den, [jméno klientky],
+> doufám že se máte fajn. Ráda bych Vám tímto slavnostně předala nový web [adresa webu].
+>
+> **Přístupové údaje**
+> Nechala jsem Vám poslat přístupové údaje k webu na [e-mailová adresa klienta]. Na tomto odkazu si nastavíte vlastní heslo. Do administrace se přihlásíte zde: [url odkaz na přihlášení].
+>
+> V administraci WordPressu v kolonce Uživatelé můžete libovolně přidávat nebo mazat správce webu. Pokud budete v budoucnu chtít dát někomu přístup, doporučuji vždy vytvořit nového uživatele. Z bezpečnostních důvodů nikdy nesdílejte své heslo a uživatelské jméno.
+>
+> Dále jsem změnila hlavního admina webu. V e-mailu máte odkaz, který je nutné potvrdit (odkaz má omezenou platnost, pokud to nestihnete, dejte prosím vědět).
+>
+> Přidělila jsem Vám také roli správce v Google Analytics. Pozvánku najdete ve svém gmailu.
+>
+> **Správa webu**
+> O web je potřeba se pravidelně starat. Doporučuji alespoň 1x týdně provádět aktualizace a zálohu. Na této stránce najdete videonávody, jak na to: <https://www.lucietomanova.cz/navody/> (heslo ke stránce: spolupraceslucii).
+>
+> Případně pokud máte zájem, nabízím správu webu za cenu 1000,- měsíčně, kdy se nemusíte o nic starat. V ceně je aktualizace, záloha, kontrola bezpečnosti, případně základní úprava informací (úprava textu, přidání fotek), dále [přidat cokoliv dalšího, co je pro klientku relevantní]. Běžná správa zabere cca hodinu měsíčně, každá další započatá hodina je za aktuální hodinovou sazbu, to jen v případě větších a složitějších úprav. Dejte prosím vědět, zda máte zájem nebo si budete web spravovat sama.
+>
+> **Fakturace a zpětná vazba**
+> Posílám také fakturu na zbylou částku.
+>
+> Na závěr bych Vás chtěla poprosit, zda byste mohla napsat krátkou referenci na naši spolupráci. Odkaz posílám zde: <https://navolnenoze.cz/prezentace/lucie-tomanova/doporucit/>. Mockrát děkuji, vážím si toho.
+>
+> Děkuji za skvělou spolupráci a doufám, že Vám bude web dobře sloužit. Budu ráda, když se mi ozvete v případě dotazů nebo úprav. Pěkný den!
+
+**Na co myslet:**
+- po spuštění se vždy znovu ověřuje funkčnost,
+- některé chyby se projeví až na ostré verzi,
+- je potřeba zkontrolovat, že klient opravdu dostal přístupy a pozvánky,
+- u každého klienta se budou měnit konkrétní odkazy, rozsah správy a některé doplňující informace.
+
+**Výstup:**
+- veřejně spuštěný web nebo předaný finální projekt.
+
+### 1.20 Následná péče
+
+**Cíl kroku:**
+- dořešit vše, co se objeví po spuštění.
+
+**Může zahrnovat:**
+- drobné úpravy,
+- doplnění obsahu,
+- technickou správu,
+- další rozvoj webu,
+- navazující spolupráci,
+- převzetí pravidelné měsíční nebo průběžné správy.
+
+**Co se často nabízí už při předání:**
+- pravidelná správa webu,
+- aktualizace a zálohy,
+- kontrola bezpečnosti,
+- základní obsahové úpravy,
+- další podpora podle potřeb klientky.
+
+**Výstup:**
+- stabilní provoz a další péče podle domluvy.
 
 ---
 
 ## 2. Správa webů
 
+Tahle část řeší jak jednorázové úpravy, tak průběžnou správu existujících webů.
+
 ### 2.1 Přijetí požadavku
-- Klient pošle požadavek na úpravu nebo správu.
-- Nejprve se vyjasní:
-  - co přesně se má změnit,
-  - na jakém webu,
-  - zda jde o jednorázovou úpravu nebo pravidelnou správu,
-  - zda jsou k tomu potřeba podklady od klienta.
+
+**Cíl kroku:**
+- přesně pochopit, co se má na webu změnit.
+
+**Je potřeba si ujasnit:**
+- na jakém webu se pracuje,
+- co je cílem změny,
+- jestli jde o jednorázovou úpravu nebo správu,
+- co dodává klient,
+- jestli je potřeba termín nebo priorita.
+
+**Výstup:**
+- jasné zadání bez domýšlení.
 
 ### 2.2 Kontrola přístupu
-- Ověří se přístup k WordPressu a dalším potřebným nástrojům.
-- Pokud už je přístup uložený, použije se stávající.
 
-### 2.3 Záloha před zásahem
-- Před jakoukoliv úpravou webu se vytvoří záloha.
-- Standard:
-  - přes plugin All in One WP Migration,
-  - uložit do sdílené složky.
-- Teprve po hotové záloze se pokračuje dál.
+**Cíl kroku:**
+- ověřit, že je možné zásah provést.
 
-### 2.4 Realizace úprav
-- Provede se pouze zadaná změna.
-- Cíl:
-  - upravit jen potřebnou část,
-  - nerozbít zbytek webu,
-  - držet se přesného zadání.
+**Kontroluje se:**
+- přístup do WordPressu,
+- případně hosting, doména nebo další služby,
+- funkčnost uložených přístupů.
 
-### 2.5 Práce s obsahem
-- Běžné činnosti mohou být:
-  - výměna textů,
-  - výměna fotografií,
-  - doplnění sekcí,
-  - úprava rozložení,
-  - přidání videa,
-  - úpravy formulářů,
-  - publikace nového obsahu.
+**Výstup:**
+- funkční přístupové zázemí.
 
-### 2.6 Zpracování dodaných fotek a podkladů
-- Pokud klient pošle fotky nebo jiné soubory:
-  - vyberou se správné podklady,
-  - optimalizuje se velikost,
-  - nahrají se na web,
-  - zkontroluje se jejich zobrazení.
+### 2.3 Informování o zahájení zálohy
 
-### 2.7 Kontrola po úpravě
-- Po zásahu se zkontroluje:
-  - že změna funguje,
-  - že se nic nerozbilo,
-  - že web vypadá správně na různých zařízeních.
+**Cíl kroku:**
+- dát klientovi vědět, že před zásahem proběhne bezpečnostní krok.
 
-### 2.8 Informování klienta
-- Po dokončení se klientovi potvrdí, že je hotovo.
-- Pokud je potřeba, doplní se stručné shrnutí, co bylo upravené.
+**Pravidlo:**
+- před prvním zásahem do webu v daném úkolu se nejdřív potvrzuje, že začíná záloha.
 
-### 2.9 Průběžná nebo opakovaná správa
-- U některých webů může správa zahrnovat i opakující se činnosti:
-  - další obsahové úpravy,
-  - technickou údržbu,
-  - průběžné změny dle potřeb klienta.
+**Výstup:**
+- klient ví, že se začíná bezpečně a kontrolovaně.
+
+### 2.4 Záloha před zásahem
+
+**Cíl kroku:**
+- mít možnost návratu v případě chyby.
+
+**Standardní postup:**
+- záloha přes All in One WP Migration,
+- uložení do sdílené složky,
+- ověření, že je záloha opravdu hotová,
+- smazání staré duplicitní zálohy, pokud je potřeba.
+
+**Důležité:**
+- bez hotové zálohy se nepokračuje,
+- u některých webů nesmí záloha zůstat uložená přímo na webu / hostingu.
+
+**Výstup:**
+- bezpečně uložená záloha.
+
+### 2.5 Potvrzení hotové zálohy
+
+**Cíl kroku:**
+- potvrdit klientovi, že bezpečnostní krok proběhl.
+
+**Pravidlo:**
+- po dokončení zálohy se klientovi hned potvrdí, že je hotová,
+- teprve potom následují samotné úpravy.
+
+**Výstup:**
+- klient ví, že práce může bezpečně pokračovat.
+
+### 2.6 Realizace úprav
+
+**Cíl kroku:**
+- provést přesně jen to, co bylo zadáno.
+
+**Zásady:**
+- měnit jen potřebnou část,
+- nesahej na jiné části webu bez důvodu,
+- nerozbít zbytek stránky,
+- držet se přesného zadání.
+
+**Běžné typy úprav:**
+- výměna textů,
+- výměna nebo doplnění fotek,
+- úprava sekcí,
+- změna rozložení,
+- doplnění formuláře,
+- vložení videa,
+- publikace nového obsahu,
+- úprava prodejní stránky nebo landing page.
+
+**Výstup:**
+- hotová změna na webu.
+
+### 2.7 Zpracování podkladů a fotek
+
+**Cíl kroku:**
+- převzít klientské podklady a dostat je do použitelné podoby.
+
+**Typicky se dělá:**
+- výběr správných souborů,
+- úprava rozměru nebo velikosti,
+- nahrání na web,
+- kontrola správného zobrazení,
+- případné přejmenování nebo organizace podkladů.
+
+**Výstup:**
+- čistě zpracovaný obsah použitý na webu.
+
+### 2.8 Kontrola po úpravě
+
+**Cíl kroku:**
+- ověřit, že změna je správně a nic dalšího se nerozbilo.
+
+**Kontroluje se:**
+- funkčnost změny,
+- vzhled na desktopu a mobilu,
+- okolní sekce,
+- formuláře a odkazy, pokud byly dotčené,
+- rychlá vizuální kontrola celé relevantní stránky.
+
+**Výstup:**
+- potvrzený správný stav po zásahu.
+
+### 2.9 Informování klienta
+
+**Cíl kroku:**
+- uzavřít úkol a dát klientovi jasný výsledek.
+
+**Typický obsah zprávy:**
+- že je hotovo,
+- co bylo upraveno,
+- případně stručná poznámka, pokud je potřeba ještě něco dodat nebo ověřit.
+
+**Výstup:**
+- klient ví, že práce skončila a v jakém stavu.
+
+### 2.10 Průběžná nebo opakovaná správa
+
+**Cíl kroku:**
+- udržovat web dlouhodobě funkční a aktuální.
+
+**Může zahrnovat:**
+- další obsahové úpravy,
+- pravidelnou technickou údržbu,
+- aktualizace WordPressu, pluginů a šablon,
+- průběžné změny dle klientových potřeb.
+
+**Výstup:**
+- průběžně udržovaný web.
+
+### 2.11 Týdenní správa webů
+
+**Cíl kroku:**
+- pravidelně projít spravované weby a držet je v bezpečném a aktuálním stavu.
+
+**Běžný týdenní rámec:**
+- záloha,
+- kontrola WordPressu,
+- kontrola pluginů,
+- kontrola šablon,
+- opatrná práce s citlivými pluginy,
+- záznam výsledku do přehledu.
+
+**Důležité:**
+- u pravidelné správy se neposílají zbytečné průběžné reporty,
+- reportuje se finální výsledek nebo skutečný problém.
+
+**Výstup:**
+- dokončená týdenní správa konkrétních webů.
 
 ---
 
 ## 3. Šablony
 
+Tahle část popisuje workflow tvorby a prodeje šablon.
+
 ### 3.1 Návrh tématu a cílové skupiny
-- Nejdřív se určí:
-  - pro koho je šablona,
-  - jaký typ podnikání řeší,
-  - jaký problém má šablona klientce usnadnit.
+
+**Cíl kroku:**
+- rozhodnout, komu je šablona určená a jaký problém řeší.
+
+**Je potřeba si ujasnit:**
+- cílovou skupinu,
+- obor nebo typ podnikání,
+- jaký výsledek má šablona zákaznici přinést,
+- jaká má být úroveň jednoduchosti použití.
+
+**Výstup:**
+- jasné zadání pro šablonu.
 
 ### 3.2 Návrh konceptu šablony
-- Definuje se:
-  - struktura šablony,
-  - jaké stránky bude obsahovat,
-  - jaký bude mít styl,
-  - jaké prvky budou univerzální.
+
+**Cíl kroku:**
+- přeložit nápad do konkrétní struktury.
+
+**Definuje se:**
+- jaké stránky bude šablona obsahovat,
+- jaké sekce budou univerzální,
+- jak bude fungovat homepage,
+- jaké prvky musí jít snadno přepsat.
+
+**Výstup:**
+- návrh struktury šablony.
 
 ### 3.3 Tvorba designového směru
-- Připraví se vizuální koncept.
-- Řeší se:
-  - barvy,
-  - typografie,
-  - layout,
-  - celkový dojem a použitelnost.
+
+**Cíl kroku:**
+- vytvořit vizuální základ pro celou šablonu.
+
+**Řeší se:**
+- barvy,
+- typografie,
+- layout,
+- atmosféra značky,
+- styl fotografií,
+- vizuální konzistence napříč stránkami.
+
+**Výstup:**
+- designový směr, podle kterého se bude šablona stavět.
 
 ### 3.4 Stavba šablony v Divi / WordPressu
-- Vytváří se samotná šablona.
-- Zahrnuje:
-  - jednotlivé stránky,
-  - sekce,
-  - opakovatelné bloky,
-  - stylování,
-  - mobilní verze.
+
+**Cíl kroku:**
+- vytvořit funkční a esteticky použitelnou šablonu.
+
+**Zahrnuje:**
+- stavbu jednotlivých stránek,
+- sekce,
+- opakovatelné bloky,
+- stylování,
+- mobilní verze,
+- případné šablony pro blog nebo další typy obsahu.
+
+**Výstup:**
+- pracovní verze šablony.
 
 ### 3.5 Nastavení univerzálnosti
-- Šablona musí být připravená tak, aby šla snadno přizpůsobit.
-- Zaměření:
-  - jednoduchá editace textů,
-  - snadná výměna fotek,
-  - přehledná struktura,
-  - použití i pro další klientky.
+
+**Cíl kroku:**
+- zajistit, aby šla šablona snadno přizpůsobit dalším klientkám.
+
+**Je potřeba hlídat:**
+- jednoduchou editaci textů,
+- snadnou výměnu fotek,
+- přehlednou strukturu,
+- čistý systém sekcí,
+- minimum zbytečně složitých prvků.
+
+**Výstup:**
+- šablona, která není navázaná jen na jeden konkrétní případ.
 
 ### 3.6 Testování použitelnosti
-- Kontroluje se:
-  - zda je šablona přehledná,
-  - zda fungují všechny části,
-  - zda se dobře upravuje,
-  - zda je dostatečně praktická pro reálné použití.
+
+**Cíl kroku:**
+- ověřit, že je šablona dobře použitelná v praxi.
+
+**Kontroluje se:**
+- přehlednost,
+- funkčnost jednotlivých částí,
+- snadnost úprav,
+- chování na mobilu,
+- jestli je práce se šablonou dost intuitivní.
+
+**Výstup:**
+- odladěná a použitelná šablona.
 
 ### 3.7 Příprava pro prodej nebo předání
-- Připraví se finální verze šablony.
-- Může zahrnovat:
-  - export / balíček,
-  - návod k použití,
-  - ukázkový obsah,
-  - podklady pro prezentaci nebo prodej.
+
+**Cíl kroku:**
+- připravit šablonu tak, aby šla bezpečně předat nebo prodávat.
+
+**Může zahrnovat:**
+- export / balíček,
+- návod k použití,
+- ukázkový obsah,
+- prodejní podklady,
+- screenshoty nebo prezentaci.
+
+**Výstup:**
+- finální balíček šablony.
 
 ### 3.8 Prodej a následná práce se šablonou
-- Po vydání šablony následuje:
-  - komunikace se zájemci,
-  - případné úpravy podle zpětné vazby,
-  - technická podpora,
-  - další verze nebo odvozené varianty.
+
+**Cíl kroku:**
+- udržet šablonu jako živý produkt.
+
+**Následuje:**
+- komunikace se zájemci,
+- podpora po koupi,
+- úpravy podle zpětné vazby,
+- další verze,
+- odvozené varianty nebo doplňky.
+
+**Výstup:**
+- dlouhodobě použitelný a rozvíjený produkt.
+
+---
+
+## Co je dobré ještě doplnit, aby workflow šlo opravdu převzít
+
+Aby tenhle dokument mohl opravdu převzít někdo nový a rozjet práci bez velkého doptávání, doporučuju doplnit ještě tyto přílohy nebo návazné dokumenty:
+
+1. vzor prvního e-mailu po poptávce,
+2. vzor dotazníku,
+3. vzor e-mailu s cenovou nabídkou,
+4. vzor samotné cenové nabídky,
+5. seznam používaných nástrojů a k čemu slouží,
+6. pravidla pro ukládání podkladů a pojmenování složek,
+7. seznam nejčastějších typů zakázek a co u nich standardně bývá součástí,
+8. checklist finální kontroly před spuštěním webu,
+9. checklist pro týdenní správu webů,
+10. seznam opakujících se problémů a jak se běžně řeší.
+
+## Doporučení pro další verzi
+
+Jakmile Lucie dodá vzory dotazníku, cenové nabídky a klientských e-mailů, vyplatí se je zapracovat přímo do workflow jako:
+- krátký popis, kdy se používají,
+- link / příloha,
+- poznámka, co se ve vzoru obvykle upravuje podle klienta.
 `;
+
+    const resources = [
+      {
+        title: 'Dotazník k tvorbě webu',
+        kind: 'dokument + textová ukázka',
+        description: 'Aktuální dotazník, který Lucie posílá po první poptávce.',
+        preview: `Jaké služby/produkty nabízíte?\n\nJaké máte výhody oproti konkurenci?\n\nJak dlouho již Váš byznys funguje?\n\nJaké jsou Vaše cíle webové prezentace?\nCo očekáváte, že web přinese, jaký je hlavní důvod jeho tvorby, jaké jsou vedlejší očekávání?\n\nJaká je Vaše představa do budoucna? Plánujete nějaké další online aktivity?\nNapř. online program, členská sekce, …\n\nExistuje již nějaká vizuální komunikace?\nLogo, barvy, vizitky apod.\n\nKdo jsou Vaši zákazníci/klienti?\n\n...`,
+        links: [
+          { label: 'Otevřít DOCX', href: 'workflow-prilohy/Dotaznik-ke-tvorbe-webu-Lucie-Tomanova.docx' },
+          { label: 'Otevřít textovou verzi', href: 'workflow-prilohy/dotaznik-ke-tvorbe-webu.txt' }
+        ]
+      },
+      {
+        title: 'Vzor prvního e-mailu po poptávce',
+        kind: 'textová ukázka',
+        description: 'E-mail, ve kterém Lucie děkuje za poptávku a posílá dotazník.',
+        preview: `Zdravím [jméno],\n\nděkuji za zprávu. Ráda s Vámi navážu spolupráci.\n\nV příloze posílám dotazník, ve kterém se ptám na základní informace o novém webu. Čím podrobněji na dané otázky odpovíte, tím lépe. Po obdržení dotazníku vytvořím nezávaznou cenovou nabídku nebo si ještě podle potřeby zavoláme pro upřesnění detailů...`,
+        links: [
+          { label: 'Otevřít vzor', href: 'workflow-prilohy/vzor-prvni-email-po-poptavce.txt' }
+        ]
+      },
+      {
+        title: 'Vzor e-mailu s cenovou nabídkou',
+        kind: 'textová ukázka',
+        description: 'Šablona e-mailu, ve kterém Lucie posílá odhad ceny a času tvorby webu.',
+        preview: `Dobrý den, [jméno klientky],\n\nještě jednou děkuji za vyplnění dotazníku a všech informací o novém webu. Prošla jsem si odpovědi a posílám odhad ceny a času tvorby webu.\n\nNový web:\n- Hlavní cíl: [cíl webu]\n- Design: [zvolené barvy, dojem z webu]\n- Rozsah webu: [počet stránek]\n...`,
+        links: [
+          { label: 'Otevřít vzor', href: 'workflow-prilohy/vzor-emailu-s-cenovou-nabidkou.txt' }
+        ]
+      },
+      {
+        title: 'Vzor předávacího e-mailu',
+        kind: 'textová ukázka',
+        description: 'E-mail pro slavnostní předání hotového webu klientce.',
+        preview: `Dobrý den, [jméno klientky],\ndoufám že se máte fajn. Ráda bych Vám tímto slavnostně předala nový web [adresa webu].\n\nPřístupové údaje\nNechala jsem Vám poslat přístupové údaje k webu na [e-mailová adresa klienta]...`,
+        links: [
+          { label: 'Otevřít vzor', href: 'workflow-prilohy/vzor-predavaciho-emailu.txt' }
+        ]
+      }
+    ];
 
     function parseMarkdown(md) {
       const lines = md.split(/\r?\n/);
@@ -802,6 +1736,7 @@
     const filterPills = document.getElementById('filter-pills');
     const searchInput = document.getElementById('search');
     const emptyState = document.getElementById('empty-state');
+    const resourceList = document.getElementById('resource-list');
 
     titleEl.textContent = doc.title;
     leadEl.textContent = doc.lead;
@@ -820,6 +1755,25 @@
         <strong>${stat.value}</strong>
         <span>${stat.label}</span>
       </div>
+    `).join('');
+
+    resourceList.innerHTML = resources.map((resource, index) => `
+      <details class="resource" ${index === 0 ? 'open' : ''}>
+        <summary>
+          <div class="resource-title-wrap">
+            <span class="resource-title">${escapeHtml(resource.title)}</span>
+            <span class="resource-meta">${escapeHtml(resource.kind)} · ${escapeHtml(resource.description)}</span>
+          </div>
+          <span class="step-toggle">+</span>
+        </summary>
+        <div class="resource-body">
+          <div>${escapeHtml(resource.description)}</div>
+          <div class="resource-links">
+            ${resource.links.map(link => `<a class="resource-link" href="${encodeURI(link.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`).join('')}
+          </div>
+          ${resource.preview ? `<pre>${escapeHtml(resource.preview)}</pre>` : ''}
+        </div>
+      </details>
     `).join('');
 
     const filters = [

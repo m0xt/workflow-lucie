@@ -1,0 +1,23 @@
+Dobrý den, [jméno klientky],
+doufám že se máte fajn. Ráda bych Vám tímto slavnostně předala nový web [adresa webu].
+
+Přístupové údaje
+Nechala jsem Vám poslat přístupové údaje k webu na [e-mailová adresa klienta]. Na tomto odkazu si nastavíte vlastní heslo. Do administrace se přihlásíte zde: [url odkaz na přihlášení].
+
+V administraci WordPressu v kolonce Uživatelé můžete libovolně přidávat nebo mazat správce webu. Pokud budete v budoucnu chtít dát někomu přístup, doporučuji vždy vytvořit nového uživatele. Z bezpečnostních důvodů nikdy nesdílejte své heslo a uživatelské jméno.
+
+Dále jsem změnila hlavního admina webu. V e-mailu máte odkaz, který je nutné potvrdit (odkaz má omezenou platnost, pokud to nestihnete, dejte prosím vědět).
+
+Přidělila jsem Vám také roli správce v Google Analytics. Pozvánku najdete ve svém gmailu.
+
+Správa webu
+O web je potřeba se pravidelně starat. Doporučuji alespoň 1x týdně provádět aktualizace a zálohu. Na této stránce najdete videonávody, jak na to: https://www.lucietomanova.cz/navody/ (heslo ke stránce: spolupraceslucii).
+
+Případně pokud máte zájem, nabízím správu webu za cenu 1000,- měsíčně, kdy se nemusíte o nic starat. V ceně je aktualizace, záloha, kontrola bezpečnosti, případně základní úprava informací (úprava textu, přidání fotek), dále [přidat cokoliv dalšího, co je pro klientku relevantní]. Běžná správa zabere cca hodinu měsíčně, každá další započatá hodina je za aktuální hodinovou sazbu, to jen v případě větších a složitějších úprav. Dejte prosím vědět, zda máte zájem nebo si budete web spravovat sama.
+
+Fakturace a zpětná vazba
+Posílám také fakturu na zbylou částku.
+
+Na závěr bych Vás chtěla poprosit, zda byste mohla napsat krátkou referenci na naši spolupráci. Odkaz posílám zde: https://navolnenoze.cz/prezentace/lucie-tomanova/doporucit/. Mockrát děkuji, vážím si toho.
+
+Děkuji za skvělou spolupráci a doufám, že Vám bude web dobře sloužit. Budu ráda, když se mi ozvete v případě dotazů nebo úprav. Pěkný den!

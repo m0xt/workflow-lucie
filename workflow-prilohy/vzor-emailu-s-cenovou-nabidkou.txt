@@ -1,0 +1,26 @@
+Dobrý den, [jméno klientky],
+
+ještě jednou děkuji za vyplnění dotazníku a všech informací o novém webu. Prošla jsem si odpovědi a posílám odhad ceny a času tvorby webu.
+
+Nový web:
+- Hlavní cíl: [cíl webu - např. prezentace služeb, zabookování lekce, objednání na konzultaci, prodej online programu apod.]
+- Design: [zvolené barvy, dojem z webu]
+- Rozsah webu: [počet stránek]
+- Weby tvořím tak, aby bylo v budoucnu jednoduché upravit základní informace (text, fotka apod.) bez pokročilých znalostí. Na závěr spolupráce poskytnu videonávody, jak se o web starat a jak s ním pracovat, případně nabízím pravidelnou správu webu.
+
+Cena
+Cena za kompletní tvorbu webu na WordPressu je [cena v Kč] (nejsem plátce DPH). Dopředu vyžaduji zálohu 30 % z celkové částky, zbytek fakturuji po odevzdání práce. V ceně je vytvoření webu, zabezpečení, základní optimalizace pro vyhledávače a veškerá potřebná technická nastavení.
+
+V ceně není [nastavení e-mailingového nástroje, nastavení prodejního systému - FAPI, SimpleShop apod.]. Pokud máte o nastavení zájem, dejte mi prosím vědět.
+
+Časový odhad
+Celkově tvorba webu trvá [doba v týdnech], záleží na vzájemné komunikaci, dodání podkladů apod.. Na webu bych mohla po obdržení všech podkladů (texty, fotky, logo) začít pracovat [termín].
+
+Co dál?
+Prosím o potvrzení cenové nabídky odpovědí na tento e-mail do 5 dnů od obdržení a zaslání fakturačních údajů. Následně pošlu zálohovou fakturu.
+
+V prvním kroku dám dohromady vizuální identitu (font, barvy, moodboard). V dalším kroku vytvořím strukturu webu. Následně spojím vše dohromady a vytvořím první návrh webu. Nasdílím Vám online nástěnku, kde budete moct pozorovat v jaké fázi tvorby se aktuálně nacházíme.
+
+Nový web budu tvořit na subdoméně u sebe na serveru (návrh během toho nebude viditelný na internetu), abyste případně mohla stávající web používat do poslední chvíle. Jakmile bude nový web kompletně hotový, přesunu ho na hlavní doménu.
+
+[Jméno klientky], pokud si potřebuje cokoliv ujasnit, klidně se ptejte. Budu se těšit na odpověď a případnou spolupráci!
