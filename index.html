@@ -188,94 +188,16 @@
       box-shadow: 0 8px 18px rgba(198,109,61,.24);
     }
 
-    .resources-panel {
-      padding: 18px;
-      margin-bottom: 18px;
-    }
-
-    .resources-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: end;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-
-    .resources-head h2 {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    .resources-head p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .resource-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    details.resource {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: rgba(255,255,255,.66);
-      overflow: hidden;
-    }
-
-    details.resource summary {
-      list-style: none;
-      cursor: pointer;
-      padding: 16px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    details.resource summary::-webkit-details-marker { display: none; }
-
-    .resource-title-wrap {
-      display: grid;
-      gap: 4px;
-    }
-
-    .resource-title {
-      font-weight: 700;
-      font-size: 16px;
-    }
-
-    .resource-meta {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .resource-body {
-      padding: 0 18px 18px;
-      color: var(--muted);
-    }
-
-    .resource-body pre {
-      white-space: pre-wrap;
-      word-break: break-word;
-      margin: 12px 0 0;
-      padding: 14px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.82);
-      border: 1px solid var(--line);
-      color: var(--text);
-      font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
-
-    .resource-links {
+    .step-resources {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 12px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--line);
     }
 
+    .step-resource-btn,
     .resource-link {
       display: inline-flex;
       align-items: center;
@@ -287,6 +209,85 @@
       padding: 10px 14px;
       border-radius: 999px;
       font-size: 14px;
+      cursor: pointer;
+    }
+
+    .step-resource-btn:hover,
+    .resource-link:hover {
+      transform: translateY(-1px);
+    }
+
+    .resource-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(34, 28, 23, 0.42);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      z-index: 50;
+    }
+
+    .resource-modal.open {
+      display: flex;
+    }
+
+    .resource-modal-card {
+      width: min(920px, 100%);
+      max-height: min(86vh, 900px);
+      overflow: auto;
+      background: var(--panel-strong);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.45);
+      padding: 24px;
+    }
+
+    .resource-modal-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .resource-modal-head h3 {
+      margin: 0 0 6px;
+      font-size: 24px;
+    }
+
+    .resource-modal-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .resource-modal-close {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+      font-size: 20px;
+      padding: 0;
+    }
+
+    .resource-preview {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 14px 0 0;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.88);
+      border: 1px solid var(--line);
+      color: var(--text);
+      font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .resource-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
     }
 
     .layout {
@@ -511,16 +512,6 @@
       </div>
     </section>
 
-    <section class="card resources-panel">
-      <div class="resources-head">
-        <div>
-          <h2>Přílohy a ukázky</h2>
-          <p>Rozklikávací vzory, které doplňují workflow. Můžou sloužit jako rychlý náhled i jako přílohy ke stažení.</p>
-        </div>
-      </div>
-      <div class="resource-list" id="resource-list"></div>
-    </section>
-
     <div class="layout">
       <aside class="card sidebar">
         <h2>Rychlá navigace</h2>
@@ -532,6 +523,20 @@
         <div class="empty-state card" id="empty-state">Nic jsem nenašel pro zadaný filtr nebo hledání.</div>
         <div id="sections"></div>
       </main>
+    </div>
+  </div>
+
+  <div class="resource-modal" id="resource-modal" aria-hidden="true">
+    <div class="resource-modal-card">
+      <div class="resource-modal-head">
+        <div>
+          <h3 id="resource-modal-title"></h3>
+          <p id="resource-modal-description"></p>
+        </div>
+        <button type="button" class="resource-modal-close" id="resource-modal-close" aria-label="Zavřít">×</button>
+      </div>
+      <div class="resource-links" id="resource-modal-links"></div>
+      <pre class="resource-preview" id="resource-modal-preview"></pre>
     </div>
   </div>
 
@@ -1587,8 +1592,8 @@ Jakmile Lucie dodá vzory dotazníku, cenové nabídky a klientských e-mailů, 
 - poznámka, co se ve vzoru obvykle upravuje podle klienta.
 `;
 
-    const resources = [
-      {
+    const resources = {
+      dotaznik: {
         title: 'Dotazník k tvorbě webu',
         kind: 'dokument + textová ukázka',
         description: 'Aktuální dotazník, který Lucie posílá po první poptávce.',
@@ -1598,7 +1603,7 @@ Jakmile Lucie dodá vzory dotazníku, cenové nabídky a klientských e-mailů, 
           { label: 'Otevřít textovou verzi', href: 'workflow-prilohy/dotaznik-ke-tvorbe-webu.txt' }
         ]
       },
-      {
+      prvniEmail: {
         title: 'Vzor prvního e-mailu po poptávce',
         kind: 'textová ukázka',
         description: 'E-mail, ve kterém Lucie děkuje za poptávku a posílá dotazník.',
@@ -1607,7 +1612,7 @@ Jakmile Lucie dodá vzory dotazníku, cenové nabídky a klientských e-mailů, 
           { label: 'Otevřít vzor', href: 'workflow-prilohy/vzor-prvni-email-po-poptavce.txt' }
         ]
       },
-      {
+      nabidkaEmail: {
         title: 'Vzor e-mailu s cenovou nabídkou',
         kind: 'textová ukázka',
         description: 'Šablona e-mailu, ve kterém Lucie posílá odhad ceny a času tvorby webu.',
@@ -1616,7 +1621,7 @@ Jakmile Lucie dodá vzory dotazníku, cenové nabídky a klientských e-mailů, 
           { label: 'Otevřít vzor', href: 'workflow-prilohy/vzor-emailu-s-cenovou-nabidkou.txt' }
         ]
       },
-      {
+      predaniEmail: {
         title: 'Vzor předávacího e-mailu',
         kind: 'textová ukázka',
         description: 'E-mail pro slavnostní předání hotového webu klientce.',
@@ -1625,7 +1630,15 @@ Jakmile Lucie dodá vzory dotazníku, cenové nabídky a klientských e-mailů, 
           { label: 'Otevřít vzor', href: 'workflow-prilohy/vzor-predavaciho-emailu.txt' }
         ]
       }
-    ];
+    };
+
+    const stepResourceMap = {
+      '1.2 První odpověď klientovi': ['prvniEmail'],
+      '1.3 Zaslání dotazníku': ['dotaznik'],
+      '1.5 Příprava cenové nabídky': ['nabidkaEmail'],
+      '1.6 Odeslání cenové nabídky a navazující komunikace': ['nabidkaEmail'],
+      '1.19 Předání / spuštění webu': ['predaniEmail']
+    };
 
     function parseMarkdown(md) {
       const lines = md.split(/\r?\n/);
@@ -1736,7 +1749,11 @@ Jakmile Lucie dodá vzory dotazníku, cenové nabídky a klientských e-mailů, 
     const filterPills = document.getElementById('filter-pills');
     const searchInput = document.getElementById('search');
     const emptyState = document.getElementById('empty-state');
-    const resourceList = document.getElementById('resource-list');
+    const resourceModal = document.getElementById('resource-modal');
+    const resourceModalTitle = document.getElementById('resource-modal-title');
+    const resourceModalDescription = document.getElementById('resource-modal-description');
+    const resourceModalLinks = document.getElementById('resource-modal-links');
+    const resourceModalPreview = document.getElementById('resource-modal-preview');
 
     titleEl.textContent = doc.title;
     leadEl.textContent = doc.lead;
@@ -1755,25 +1772,6 @@ Jakmile Lucie dodá vzory dotazníku, cenové nabídky a klientských e-mailů, 
         <strong>${stat.value}</strong>
         <span>${stat.label}</span>
       </div>
-    `).join('');
-
-    resourceList.innerHTML = resources.map((resource, index) => `
-      <details class="resource" ${index === 0 ? 'open' : ''}>
-        <summary>
-          <div class="resource-title-wrap">
-            <span class="resource-title">${escapeHtml(resource.title)}</span>
-            <span class="resource-meta">${escapeHtml(resource.kind)} · ${escapeHtml(resource.description)}</span>
-          </div>
-          <span class="step-toggle">+</span>
-        </summary>
-        <div class="resource-body">
-          <div>${escapeHtml(resource.description)}</div>
-          <div class="resource-links">
-            ${resource.links.map(link => `<a class="resource-link" href="${encodeURI(link.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`).join('')}
-          </div>
-          ${resource.preview ? `<pre>${escapeHtml(resource.preview)}</pre>` : ''}
-        </div>
-      </details>
     `).join('');
 
     const filters = [
@@ -1806,6 +1804,37 @@ Jakmile Lucie dodá vzory dotazníku, cenové nabídky a klientských e-mailů, 
       }).join('');
     }
 
+    function renderStepResources(stepTitle) {
+      const resourceIds = stepResourceMap[stepTitle] || [];
+      if (!resourceIds.length) return '';
+      return `
+        <div class="step-resources">
+          ${resourceIds.map(id => {
+            const resource = resources[id];
+            return `<button type="button" class="step-resource-btn" data-resource="${escapeHtml(id)}">Ukázka: ${escapeHtml(resource.title)}</button>`;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function openResourceModal(resourceId) {
+      const resource = resources[resourceId];
+      if (!resource) return;
+      resourceModalTitle.textContent = resource.title;
+      resourceModalDescription.textContent = `${resource.kind} · ${resource.description}`;
+      resourceModalLinks.innerHTML = resource.links.map(link => `<a class="resource-link" href="${encodeURI(link.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`).join('');
+      resourceModalPreview.textContent = resource.preview || '';
+      resourceModal.classList.add('open');
+      resourceModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeResourceModal() {
+      resourceModal.classList.remove('open');
+      resourceModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
     function renderSections(query = '', filter = 'all') {
       const normalizedQuery = query.trim().toLowerCase();
       let visibleCount = 0;
@@ -1836,6 +1865,7 @@ Jakmile Lucie dodá vzory dotazníku, cenové nabídky a klientských e-mailů, 
                   </summary>
                   <div class="step-body">
                     ${renderContentBlocks(step.content, normalizedQuery)}
+                    ${renderStepResources(step.title)}
                   </div>
                 </details>
               `).join('')}
@@ -1871,6 +1901,20 @@ Jakmile Lucie dodá vzory dotazníku, cenové nabídky a klientských e-mailů, 
 
     document.getElementById('collapse-all').addEventListener('click', () => {
       document.querySelectorAll('details.step').forEach(detail => detail.open = false);
+    });
+
+    sectionsEl.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-resource]');
+      if (!button) return;
+      openResourceModal(button.dataset.resource);
+    });
+
+    document.getElementById('resource-modal-close').addEventListener('click', closeResourceModal);
+    resourceModal.addEventListener('click', (event) => {
+      if (event.target === resourceModal) closeResourceModal();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && resourceModal.classList.contains('open')) closeResourceModal();
     });
 
     const observer = new IntersectionObserver((entries) => {
