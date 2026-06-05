@@ -1,0 +1,2637 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Workflow Lucie — LLM verze</title>
+  <style>
+    :root {
+      --bg: #f6f2ee;
+      --panel: rgba(255,255,255,.82);
+      --panel-strong: rgba(255,255,255,.94);
+      --text: #2d2a26;
+      --muted: #6e655c;
+      --line: rgba(114, 92, 72, 0.16);
+      --accent: #c66d3d;
+      --accent-soft: rgba(198, 109, 61, 0.12);
+      --shadow: 0 18px 42px rgba(76, 54, 38, 0.12);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(198,109,61,.12), transparent 26%),
+        radial-gradient(circle at top right, rgba(125,149,115,.12), transparent 24%),
+        linear-gradient(180deg, #fbf8f5 0%, var(--bg) 100%);
+    }
+
+    .shell {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.5fr .9fr;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,.45);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+
+    .hero-main {
+      padding: 28px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.02;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+      max-width: 70ch;
+    }
+
+    .hero-side {
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 4px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .quote {
+      margin: 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--accent);
+      background: rgba(255,255,255,.72);
+      border-radius: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.3fr auto auto;
+      gap: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 15px 18px 15px 46px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      font-size: 15px;
+      background: rgba(255,255,255,.8);
+      color: var(--text);
+      outline: none;
+    }
+
+    .search-wrap::before {
+      content: '⌕';
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .pill-row, .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.76);
+      color: var(--text);
+      padding: 11px 15px;
+      border-radius: 999px;
+      font: inherit;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button.active {
+      background: var(--accent);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 8px 18px rgba(198,109,61,.24);
+    }
+
+    .step-resources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .step-resource-btn,
+    .resource-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(255,255,255,.82);
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .step-resource-btn:hover,
+    .resource-link:hover {
+      transform: translateY(-1px);
+    }
+
+    .resource-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(34, 28, 23, 0.42);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      z-index: 50;
+    }
+
+    .resource-modal.open {
+      display: flex;
+    }
+
+    .resource-modal-card {
+      width: min(920px, 100%);
+      max-height: min(86vh, 900px);
+      overflow: auto;
+      background: var(--panel-strong);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.45);
+      padding: 24px;
+    }
+
+    .resource-modal-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .resource-modal-head h3 {
+      margin: 0 0 6px;
+      font-size: 24px;
+    }
+
+    .resource-modal-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .resource-modal-close {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+      font-size: 20px;
+      padding: 0;
+    }
+
+    .resource-preview {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 14px 0 0;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.88);
+      border: 1px solid var(--line);
+      color: var(--text);
+      font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .resource-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 22px;
+      padding: 18px;
+    }
+
+    .sidebar h2 {
+      margin: 0 0 14px;
+      font-size: 15px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.62);
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255,255,255,.92);
+      border-color: var(--line);
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 22px;
+      scroll-margin-top: 24px;
+    }
+
+    .section.hidden { display: none; }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      margin: 0;
+      font-size: clamp(24px, 3.2vw, 34px);
+    }
+
+    .section-meta {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section-intro {
+      margin-bottom: 16px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .intro-list {
+      margin: 10px 0 0 0;
+      padding-left: 18px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 14px;
+    }
+
+    details.step {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(255,255,255,.74);
+    }
+
+    details.step[open] {
+      background: var(--panel-strong);
+    }
+
+    .step summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .step summary::-webkit-details-marker { display: none; }
+
+    .step-badge {
+      flex: 0 0 auto;
+      min-width: 54px;
+      height: 38px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.35;
+      flex: 1;
+    }
+
+    .step-toggle {
+      color: var(--muted);
+      font-size: 22px;
+      transition: transform .18s ease;
+    }
+
+    details[open] .step-toggle { transform: rotate(45deg); }
+
+    .step-body {
+      padding: 0 20px 20px 20px;
+      color: var(--muted);
+    }
+
+    .step-body p {
+      margin: 0 0 10px;
+      line-height: 1.68;
+    }
+
+    .step-body ul {
+      margin: 10px 0 0 0;
+      padding-left: 20px;
+    }
+
+    .step-body li {
+      margin: 7px 0;
+      line-height: 1.55;
+    }
+
+    mark {
+      background: rgba(255, 215, 122, .7);
+      color: inherit;
+      padding: 0 .12em;
+      border-radius: .2em;
+    }
+
+    .empty-state {
+      display: none;
+      padding: 34px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1120px) {
+      .hero, .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .toolbar { grid-template-columns: 1fr; }
+      .pill-row, .action-row { justify-content: flex-start; }
+    }
+
+    @media (max-width: 720px) {
+      .shell { padding: 16px; }
+      .hero-main, .hero-side, .toolbar, .section { padding: 18px; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .step summary { padding: 16px; }
+      .step-body { padding: 0 16px 16px; }
+      .step-badge { min-width: 46px; height: 34px; }
+      .step-title { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="card hero-main">
+        <div class="eyebrow">Interaktivní workflow</div>
+        <h1 id="doc-title">Workflow Lucie</h1>
+        <p class="lead" id="doc-lead"></p>
+      </div>
+      <aside class="card hero-side">
+        <div class="stat-grid" id="stat-grid"></div>
+        <blockquote class="quote" id="doc-quote"></blockquote>
+      </aside>
+    </section>
+
+    <section class="card toolbar">
+      <label class="search-wrap">
+        <input id="search" type="search" placeholder="Hledat krok, činnost, nástroj nebo klíčové slovo…" />
+      </label>
+      <div class="pill-row" id="filter-pills"></div>
+      <div class="action-row">
+        <button id="expand-all" type="button">Rozbalit vše</button>
+        <button id="collapse-all" type="button">Sbalit vše</button>
+      </div>
+    </section>
+
+    <div class="layout">
+      <aside class="card sidebar">
+        <h2>Rychlá navigace</h2>
+        <nav class="nav-list" id="nav-list"></nav>
+        <div class="footer-note">Tip: Můžeš filtrovat podle směru práce nebo hledat napříč celým workflow.</div>
+      </aside>
+
+      <main class="content">
+        <div class="empty-state card" id="empty-state">Nic jsem nenašel pro zadaný filtr nebo hledání.</div>
+        <div id="sections"></div>
+      </main>
+    </div>
+  </div>
+
+  <div class="resource-modal" id="resource-modal" aria-hidden="true">
+    <div class="resource-modal-card">
+      <div class="resource-modal-head">
+        <div>
+          <h3 id="resource-modal-title"></h3>
+          <p id="resource-modal-description"></p>
+        </div>
+        <button type="button" class="resource-modal-close" id="resource-modal-close" aria-label="Zavřít">×</button>
+      </div>
+      <div class="resource-links" id="resource-modal-links"></div>
+      <pre class="resource-preview" id="resource-modal-preview"></pre>
+    </div>
+  </div>
+
+  <script>
+    const markdown = String.raw`# Workflow Lucie — LLM verze
+
+> Detailnější a specifičtější verze workflow určená jako podklad pro LLM, automatizace a návrh systému.
+> Vychází z lidské provozní verze, ale bude se dál rozšiřovat o rozhodovací logiku, vstupy, výstupy, výjimky a napojení na nástroje.
+
+## Kdo je Lucie a jak pracuje
+
+- Lucie je webdesignérka.
+- Tvoří weby hlavně na WordPressu pomocí Divi.
+- Prodává také vlastní Divi šablony.
+- Klade důraz na přehlednost, jednoduchost a praktické řešení.
+- Často kombinuje klientskou komunikaci, strategii, obsah, vizuální směr, technické nastavení i samotnou realizaci webu.
+- Běžně pracuje s klientskými podklady, fotkami, texty, moodboardy, Milanote nástěnkami a WordPressem.
+
+## Hlavní směry práce
+
+1. Nové weby
+2. Správa webů
+3. Šablony
+
+---
+
+## 1. Nové weby
+
+Tahle část popisuje typický proces nové zakázky od první poptávky po spuštění webu a následnou péči.
+
+### 1.1 Příchod poptávky
+
+**Typ kroku:**
+- vstupní kvalifikace nového leadu
+
+**Vstup:**
+- nová poptávka přijde e-mailem, formulářem, doporučením nebo jiným kontaktním kanálem
+- může být velmi stručná nebo naopak dlouhá, ale často neobsahuje všechny důležité informace
+
+**Cíl kroku:**
+- rychle vyhodnotit, co klient potřebuje
+- zjistit, jestli jde o nový web, redesign nebo dílčí pomoc
+- odhadnout, jestli dává smysl klienta posunout do další fáze
+- připravit rozhodnutí, zda rovnou poslat dotazník, nebo nejdřív doptat zásadní chybějící informace
+
+**Co z poptávky vytěžit:**
+- typ podnikání klienta
+- hlavní služba nebo produkt
+- zda už existuje web a v jakém je stavu
+- orientační rozsah poptávky
+- zda klient má texty, fotky, branding nebo jen základní nápad
+- zda zmiňuje termín nebo časový tlak
+- jaký problém chce webem vyřešit
+
+**Rozhodovací logika:**
+- pokud je poptávka srozumitelná a nechybí zásadní kontext, pokračuj prvním e-mailem s dotazníkem
+- pokud chybí jen drobnosti, neblokuj tím další krok a pošli dotazník rovnou
+- pokud chybí zásadní informace a bez nich není jasné, co klient vlastně chce, nejdřív pošli krátké doplňující otázky
+- pokud už z poptávky vyplývá, že očekávání jsou mimo reálný rozsah nebo zakázka zjevně nesedí, označ to jako potřebu opatrného ručního posouzení
+
+**Na co si dát pozor:**
+- klient může popisovat řešení, ale ne skutečný problém
+- někdy není rozdíl mezi novým webem a redesignem pojmenovaný přesně
+- stručná poptávka nemusí znamenat špatného klienta, jen nízkou informační hodnotu vstupu
+- LLM nemá samo definitivně odmítat zakázku bez schválení člověkem
+
+**Akce systému:**
+- založit záznam leadu / zakázky
+- přiřadit základní stav typu \`nová poptávka\`
+- uložit původní zprávu a vytáhnout z ní klíčové body
+- připravit návrh další odpovědi podle míry úplnosti vstupu
+
+**Výstup:**
+- jeden z těchto stavů:
+  - \`poslat dotazník\`
+  - \`nejdřív doptat zásadní informace\`
+  - \`ruční posouzení vhodnosti zakázky\`
+
+### 1.2 První odpověď klientovi
+
+**Typ kroku:**
+- první reakce na lead
+
+**Vstup:**
+- kvalifikovaná poptávka z předchozího kroku
+- rozhodnutí, zda poslat dotazník rovnou, nebo nejdřív položit doplňující otázky
+
+**Cíl kroku:**
+- potvrdit klientovi, že jeho poptávka byla zachycena
+- vytvořit příjemný a profesionální první dojem
+- posunout komunikaci do dalšího konkrétního kroku
+
+**Standardní obsah odpovědi:**
+- poděkování za zprávu
+- stručné potvrzení, že Lucie poptávku prošla
+- vysvětlení dalšího kroku
+- zaslání nebo odkaz na dotazník
+- případně krátké doplňující otázky, pokud něco zásadního chybí
+
+**Rozhodovací logika:**
+- pokud jsou informace dostatečné pro běžný postup, pošli první odpověď s dotazníkem
+- pokud chybí jen doplňkové detaily, pošli dotazník i tak a případné drobnosti si vyžádej v textu nebo později
+- pokud chybí zásadní informace, nejdřív pošli krátký blok doplňujících otázek a dotazník neposílej mechanicky bez kontextu
+- pokud je vhodné nabídnout upřesňující hovor, zmiň ho jen jako volitelnou možnost, ne jako povinný mezikrok
+
+**Aktuálně používaná logika prvního e-mailu:**
+- poděkovat za zprávu
+- potvrdit ochotu navázat spolupráci
+- poslat dotazník jako další krok
+- vysvětlit, že čím podrobněji klient odpoví, tím lépe
+- říct, že po obdržení dotazníku vznikne nezávazná cenová nabídka
+- případně doplnit, že se podle potřeby může domluvit upřesňující hovor
+- zmínit, že spolu s nabídkou přijde i časový odhad tvorby webu
+- odkázat klienta na stránku Služby: <https://www.lucietomanova.cz/sluzby/>
+- uzavřít zprávu otevřeně a přátelsky s výzvou, že se může doptat
+
+**Co má systém udělat:**
+- připravit odpověď podle správné varianty
+- vložit správný odkaz nebo přílohu s dotazníkem
+- zachovat přirozený tón a nepsat příliš stroze nebo roboticky
+- uložit, která varianta odpovědi byla použita
+
+**Co vyžaduje schválení člověkem:**
+- případné odmítnutí zakázky
+- výrazně individuální reakce mimo běžný vzor
+- situace, kdy je potřeba citlivě korigovat nereálná očekávání klienta
+
+**Ukázka:**
+- plný vzor e-mailu je dostupný přes tlačítko u tohoto kroku v HTML verzi workflow
+
+**Výstup:**
+- odeslaný první e-mail
+- klient ví, co má udělat dál
+- stav zakázky přepnutý na \`čeká se na dotazník\` nebo \`čeká se na doplnění informací\`
+
+### 1.3 Zaslání dotazníku
+
+**Typ kroku:**
+- sběr strukturovaných vstupů pro nabídku
+
+**Vstup:**
+- klient byl posunut do fáze vyplnění dotazníku
+- existuje první odpověď nebo sada doplňujících otázek
+
+**Cíl kroku:**
+- získat podklady pro strategii, rozsah, nacenění a další rozhodnutí
+- sjednotit informace do strukturované podoby, se kterou se dá dál pracovat
+
+**Co má dotazník zmapovat:**
+- čím se klient zabývá
+- komu prodává
+- co má web splnit
+- jaké stránky nebo sekce bude potřebovat
+- jaké funkce mají na webu být
+- jaký styl se mu líbí
+- co se mu líbí a nelíbí na současném webu
+- jaké má podklady: texty, fotky, logo, brand
+- zda už má doménu a hosting
+- jaký má termín
+- případná další očekávání
+
+**Aktuální obsah používaného dotazníku:**
+
+**A. Byznys a nabídka**
+- služby / produkty
+- odlišení od konkurence
+- délka fungování byznysu
+- cíloví zákazníci
+
+**B. Cíle a budoucnost**
+- cíle webu
+- očekávání od webu
+- hlavní důvod tvorby
+- budoucí online plány
+
+**C. Značka a marketing**
+- vizuální komunikace
+- dosavadní marketingové aktivity
+
+**D. Současný web**
+- adresa stávajícího webu
+- co na něm funguje
+- co je problém
+
+**E. Technické zázemí**
+- hosting
+- registrátor domény
+
+**F. Vizuální preference**
+- líbivé a nelíbivé weby
+- požadovaný dojem
+- barvy
+- písmo
+
+**G. Rozsah webu a obsah**
+- počet a typ stránek
+- důležité funkce
+- obsah zdarma / lead magnet
+
+**H. Integrace a rozšíření**
+- analytické nástroje
+- e-mailing
+- jazykové mutace
+- e-mail na doméně
+
+**I. Termín a zdroj poptávky**
+- deadline
+- odkud klient přišel
+- další poznámky
+
+**Rozhodovací logika po doručení dotazníku:**
+- pokud jsou odpovědi dostatečné, přejdi do vyhodnocení dotazníku
+- pokud chybí jen menší části, připrav seznam doplnění a pokračuj bez zbytečného zdržení
+- pokud dotazník odhalí, že klient nemá jasno, označ potřebu silnějšího vedení v dalších krocích
+- pokud se objeví rozpor mezi očekáváním a reálným rozsahem, připrav to jako bod pro ruční posouzení nebo citlivé vysvětlení v nabídce
+
+**Pravidla pro práci s dotazníkem:**
+- dotazník má získat dost informací, ale nemá klienta zahltit
+- otázky musí být srozumitelné i pro člověka, který webům nerozumí
+- odpovědi je potřeba číst jako celek, ne izolovaně po jednotlivých otázkách
+- LLM má umět označit nejasnosti, rozpory a chybějící vstupy
+
+**Co má systém udělat:**
+- uložit odeslaný dotazník nebo odkaz na něj
+- po doručení odpovědí vytáhnout klíčové údaje do strukturovaného shrnutí
+- označit nejasná, chybějící nebo riziková místa
+- připravit podklad pro cenovou nabídku
+
+**Ukázka:**
+- plné znění dotazníku je dostupné přes tlačítko u tohoto kroku v HTML verzi workflow
+
+**Výstup:**
+- vyplněný dotazník nebo rozpracovaný soubor odpovědí
+- strukturované shrnutí vstupů
+- seznam chybějících nebo nejasných bodů pro další krok
+
+### 1.4 Vyhodnocení dotazníku
+
+**Typ kroku:**
+- převod vstupů klienta do konkrétního zadání
+
+**Vstup:**
+- vyplněný dotazník
+- případné doplňující zprávy od klienta
+- poznámky z první poptávky nebo doplňujících otázek
+
+**Cíl kroku:**
+- převést klientovy odpovědi do srozumitelného zadání pro nabídku a realizaci
+- odhalit chybějící informace, rozpory a rizika
+- připravit podklad pro nacenění, časový odhad a další postup
+
+**Při vyhodnocení je potřeba si ujasnit:**
+- jaká bude hlavní role webu
+- jaké budou hlavní stránky
+- co je nutné vytvořit a co je volitelné
+- jestli klient dodá vše potřebné
+- jak náročná bude práce s obsahem
+- jestli bude potřeba pomoci s texty, fotkami nebo strukturou
+- zda je potřeba řešit technické zázemí
+- zda jsou očekávání klienta realistická vůči rozsahu a termínu
+
+**Rozhodovací logika:**
+- pokud jsou odpovědi dostatečné a konzistentní, vytvoř zadání a pokračuj k nabídce
+- pokud chybí menší množství informací, připrav seznam doplnění a pokračuj v návrhu nabídky s označením otevřených bodů
+- pokud chybí zásadní informace, zastav přípravu finální nabídky a vrať se ke klientovi pro upřesnění
+- pokud se objeví rozpor mezi rozsahem, rozpočtem a termínem, označ to jako bod pro ruční rozhodnutí nebo citlivé vysvětlení v nabídce
+
+**Co má systém vytáhnout do shrnutí:**
+- typ webu a hlavní cíl
+- cílovou skupinu
+- předpokládaný rozsah stránek
+- potřebné funkce a integrace
+- stav podkladů
+- vizuální směr
+- technické potřeby
+- otevřené otázky a rizika
+
+**Akce systému:**
+- vytvořit strukturované interní shrnutí zakázky
+- rozdělit informace na \`potvrzené\`, \`nejasné\`, \`chybějící\` a \`rizikové\`
+- připravit seznam doplňujících otázek, pokud jsou potřeba
+- připravit kostru cenové nabídky
+
+**Co vyžaduje schválení člověkem:**
+- rozhodnutí v hraničních nebo nejednoznačných případech
+- situace, kdy je potřeba strategicky změnit rozsah zakázky
+- případy, kdy je vhodné klienta aktivně vést jiným směrem než původně zamýšlel
+
+**Výstup:**
+- jasnější zadání
+- strukturovaný podklad pro cenovou nabídku
+- případně seznam doplňujících otázek pro klienta
+
+### 1.5 Příprava cenové nabídky
+
+**Typ kroku:**
+- převod zadání do obchodní nabídky
+
+**Vstup:**
+- vyhodnocený dotazník
+- shrnutí rozsahu a rizik
+- případné doplněné informace od klienta
+
+**Cíl kroku:**
+- převést rozsah práce do srozumitelné, obchodně použitelné nabídky
+- nastavit očekávání ohledně ceny, času a průběhu spolupráce
+
+**Nabídka by měla obsahovat:**
+- co přesně je součástí zakázky
+- co součástí není
+- počet nebo typ stránek
+- případné technické položky
+- co dodává klient a co řeší Lucie
+- cenový rámec
+- případně termín nebo odhad harmonogramu
+- informaci o dalším postupu po odsouhlasení
+
+**Aktuální struktura cenové nabídky v e-mailu:**
+- poděkování za vyplnění dotazníku
+- informace, že Lucie prošla odpovědi
+- odhad ceny a času tvorby webu
+- shrnutí webu v bodech:
+  - hlavní cíl webu
+  - design / zvolený dojem a barvy
+  - rozsah webu
+  - poznámka, že web bude snadno editovatelný i do budoucna
+- samostatná část **Cena**
+- samostatná část **Časový odhad**
+- samostatná část **Co dál?**
+- stručné vysvětlení následujících fází spolupráce
+- vysvětlení, kde se bude web tvořit:
+  - na subdoméně u Lucie
+  - nebo přímo na ostré verzi s režimem údržby
+- závěrečné povzbuzení, že se klientka může doptat
+
+**Co se v nabídce mění podle konkrétní zakázky:**
+- cena
+- časový odhad
+- termín možného startu
+- počet stránek / rozsah webu
+- hlavní cíl webu
+- zvolený design / dojem
+- položky, které nejsou v ceně
+- jestli se web tvoří na subdoméně, nebo přímo na ostré verzi
+
+**Rozhodovací logika:**
+- pokud je rozsah jasný, vytvoř standardní nabídku podle běžné struktury
+- pokud je zakázka složitější, explicitně odděl základní rozsah a možné rozšíření
+- pokud jsou v zadání nejistoty, nepředstírej přesnost; raději je v nabídce pojmenuj nebo vyžádej doplnění
+- pokud je potřeba rozhodnout mezi subdoménou a ostrou verzí, přizpůsob návrh technického postupu stavu klientova webu
+
+**Důležité zásady:**
+- nabídka má být jasná a bez nejasností
+- klient musí rozumět tomu, co kupuje
+- je potřeba oddělit základ zakázky od možných rozšíření
+- klient má dostat nejen cenu, ale i představu o průběhu spolupráce
+- LLM nemá vymýšlet neodsouhlasené položky jen proto, aby byla nabídka „úplnější“
+
+**Akce systému:**
+- sestavit návrh nabídky z potvrzených vstupů
+- doplnit proměnné části podle konkrétní zakázky
+- označit otevřené body, které se nesmí tvářit jako definitivně rozhodnuté
+- připravit finální e-mail k odeslání nebo draft ke schválení
+
+**Co vyžaduje schválení člověkem:**
+- finální cena a rozsah
+- netypické výluky z ceny
+- citlivě formulované pasáže kolem změny rozsahu, rozpočtu nebo termínu
+
+**Výstup:**
+- hotová cenová nabídka připravená k odeslání
+- případně draft s vyznačenými body ke schválení
+
+### 1.6 Odeslání cenové nabídky a navazující komunikace
+
+**Typ kroku:**
+- odeslání nabídky a řízení odpovědi klienta
+
+**Vstup:**
+- finální nebo schválený draft nabídky
+- rozhodnutí, že nabídka je připravená k odeslání
+
+**Cíl kroku:**
+- doručit nabídku srozumitelně a s jistotou
+- pomoct klientovi udělat informované rozhodnutí
+- připravit další navazující krok podle reakce klienta
+
+**Co má zaznít v e-mailu:**
+- stručné shrnutí, na základě čeho nabídka vznikla
+- co nabídka pokrývá
+- případně co je důležité si projít
+- výzva, aby se klient ozval s dotazy
+- další krok při schválení
+
+**Aktuálně používaný princip e-mailu s nabídkou:**
+- nejdřív poděkování za dotazník
+- potom krátké shrnutí, že odpovědi byly prošlé
+- následně přehled ceny a času
+- pak vysvětlení, co je v ceně a co v ní není
+- potom další postup a instrukce pro potvrzení
+- nakonec popis, jak bude realizace prakticky probíhat
+
+**Rozhodovací logika po odeslání:**
+- pokud klient nabídku schválí, přejdi do potvrzení zájmu
+- pokud klient položí doplňující otázky, připrav odpovědi a případně upravenou variantu nabídky
+- pokud klient připomínkuje rozsah, cenu nebo termín, označ to jako vyjednávací krok a připrav revizi nabídky
+- pokud klient delší dobu nereaguje, označ zakázku jako čekající a připrav případný follow-up podle nastaveného režimu práce
+
+**Akce systému:**
+- odeslat finální nabídku nebo připravit draft k odeslání
+- uložit datum odeslání a verzi nabídky
+- přepnout stav zakázky na \`čeká se na reakci na nabídku\`
+- při odpovědi klienta roztřídit reakci na \`schválení\`, \`dotaz\`, \`připomínka\`, \`bez reakce\`
+
+**Co vyžaduje schválení člověkem:**
+- výraznější změna ceny nebo rozsahu po zpětné vazbě klienta
+- individuální vyjednávání mimo standardní rámec
+- rozhodnutí, kdy už nemá smysl zakázku dál držet aktivní
+
+**Ukázka:**
+- plný vzor e-mailu je dostupný přes tlačítko u tohoto kroku v HTML verzi workflow
+
+**Na co myslet:**
+- klient může potřebovat doplnění nebo úpravu rozsahu
+- někdy je potřeba nabídku upravit podle zpětné vazby
+- je potřeba rozhodnout, zda se web tvoří na subdoméně, nebo rovnou na ostré verzi
+- pokud už klient web má, je potřeba tomu přizpůsobit i technický popis postupu
+
+**Výstup:**
+- klient nabídku buď schválí, připomínkuje, nebo spolupráci neotevře
+- zakázka má správně nastavený další stav
+
+### 1.7 Potvrzení zájmu
+
+**Typ kroku:**
+- převod nabídky do potvrzené spolupráce
+
+**Vstup:**
+- klient reaguje na cenovou nabídku
+- nabídka je schválená nebo schválená s drobným upřesněním
+
+**Cíl kroku:**
+- uzavřít obchodní část
+- potvrdit, že obě strany rozumí rozsahu, ceně a dalším krokům
+- přepnout zakázku z předobchodní fáze do přípravy realizace
+
+**Co znamená potvrzení:**
+- klient souhlasí s rozsahem
+- klient souhlasí s cenou
+- klient chce začít
+- je jasné, co následuje dál
+
+**Rozhodovací logika:**
+- pokud klient výslovně souhlasí s nabídkou, pokračuj na zálohovou fakturu a založení zázemí projektu
+- pokud klient souhlasí, ale zároveň otevírá menší doplňující body, potvrď spolupráci a tyto body eviduj jako navazující úkoly
+- pokud klient ještě váhá nebo klade zásadní doplňující otázky, neoznačuj zakázku jako definitivně potvrzenou
+- pokud je souhlas nejasný nebo podmíněný větší změnou rozsahu, vrať zakázku do fáze upřesnění nabídky
+
+**Co má systém udělat:**
+- uložit potvrzení klienta
+- přepnout stav zakázky na \`potvrzeno / čeká se na zálohu\`
+- připravit navazující administrativní kroky
+- zapsat, zda jsou otevřené nějaké doplňující body ještě před startem projektu
+
+**Co následuje hned po potvrzení spolupráce:**
+- zaslání zálohové faktury
+- vytvoření sdílené nástěnky v Milanote
+- vytvoření sdílené složky na Google Drive pro podklady
+
+**Co vyžaduje schválení člověkem:**
+- nejednoznačné potvrzení spolupráce
+- situace, kdy klient potvrzuje zakázku, ale současně chce větší změnu rozsahu nebo ceny
+
+**Výstup:**
+- potvrzená spolupráce
+- připravuje se zálohová faktura a zahájení projektu
+
+### 1.8 Zálohová faktura
+
+**Typ kroku:**
+- administrativní spuštění zakázky
+
+**Vstup:**
+- potvrzená spolupráce
+- potvrzené obchodní podmínky zakázky
+
+**Cíl kroku:**
+- formálně spustit zakázku a navázat ji na platbu
+- uzavřít obchodní fázi a připravit podmínku pro začátek realizace
+
+**Co udělat:**
+- vystavit zálohovou fakturu
+- poslat ji klientovi
+- zkontrolovat, že dorazila
+- hlídat úhradu
+
+**Rozhodovací logika:**
+- po potvrzení spolupráce vystav zálohovou fakturu co nejdřív jako první formální krok
+- dokud není záloha uhrazená, nepřepínej zakázku do plně aktivní realizační fáze
+- pokud se platba zdržuje, připrav jemné připomenutí
+- pokud klient hlásí problém s fakturou nebo platbou, eviduj to jako blokaci startu projektu
+
+**Akce systému:**
+- založit nebo připravit zálohovou fakturu ve fakturačním nástroji
+- uložit datum vystavení a odeslání
+- přepnout stav zakázky na \`čeká se na úhradu zálohy\`
+- po přijetí platby přepnout stav na \`záloha uhrazena\`
+
+**Důležité:**
+- do realizační fáze se přechází až po zaplacení zálohy
+- pokud se platba zdržuje, je potřeba klienta jemně připomenout
+- LLM nemá samo potvrzovat nestandardní platební výjimky bez rozhodnutí člověka
+
+**Co vyžaduje schválení člověkem:**
+- výjimky z běžného platebního režimu
+- změna výše zálohy nebo individuální domluva na platbě
+- citlivější komunikace při opožděné úhradě
+
+**Výstup:**
+- vystavená a odeslaná zálohová faktura
+- nebo uhrazená záloha a zelená pro další kroky
+
+### 1.9 Založení projektu a pracovního zázemí
+
+**Typ kroku:**
+- založení projektové infrastruktury
+
+**Vstup:**
+- potvrzená spolupráce
+- základní rozhodnutí o rozsahu zakázky
+- ideálně už i návaznost na zálohovou fakturu
+
+**Cíl kroku:**
+- vytvořit jedno místo, kde budou všechny podklady, odkazy a pracovní orientace
+- oddělit klientský prostor od interního provozního přehledu
+
+**Typicky se zakládá:**
+- sdílená Milanote nástěnka pro klienta
+- sdílená Google Drive složka na podklady
+- interní přehled zakázky
+- seznam odkazů a přístupů
+- případně záznam v pracovním systému
+
+**Jakou roli mají jednotlivé části:**
+- **Milanote** = přehled spolupráce, vizuální směr a průběh tvorby
+- **Google Drive** = místo, kam klient nahrává texty, fotky a další podklady
+- **interní přehled** = provozní řízení zakázky
+
+**Rozhodovací logika:**
+- pokud je spolupráce potvrzená, založ projektové zázemí co nejdřív, aby klient věděl, kam bude dál nahrávat podklady
+- pokud některý z prostorů ještě nevznikl, označ to jako blokaci dalšího kroku a vytvoř ho před sběrem podkladů
+- pokud už pro klienta existuje část infrastruktury z dřívějška, nepřidělávej duplicity bez důvodu; nejdřív ověř, zda lze navázat na existující strukturu
+
+**Praktický princip:**
+- všechno důležité musí být rychle dohledatelné
+- člověk, který projekt převezme, se nesmí spoléhat na dohledávání v historii zpráv
+- klient má mít jasně oddělené, kam sleduje průběh a kam nahrává materiály
+
+**Akce systému:**
+- vytvořit nebo připravit Milanote nástěnku
+- vytvořit nebo připravit Google Drive složku
+- uložit odkazy na obě místa do interního přehledu zakázky
+- zapsat, co je připravené a co ještě chybí
+
+**Co vyžaduje schválení člověkem:**
+- použití nestandardní projektové struktury
+- případy, kdy není jasné, jestli navázat na starý projekt nebo založit nový
+
+**Výstup:**
+- připravené pracovní zázemí projektu
+- jasně uložené odkazy a další návazný krok pro sběr podkladů
+
+### 1.10 Klientská nástěnka / Milanote
+
+**Typ kroku:**
+- vytvoření klientského přehledu projektu
+
+**Vstup:**
+- potvrzená spolupráce
+- založené projektové zázemí
+- základní informace o zakázce
+
+**Cíl kroku:**
+- dát klientovi přehled o průběhu spolupráce, materiálech a dalších krocích
+- vytvořit jedno klientské místo, odkud je jasné, co se děje a co se od klienta čeká
+
+**Na Milanote může být:**
+- přehled jednotlivých fází projektu
+- checklist, co klient dodává
+- moodboard
+- inspirace
+- odkazy
+- důležité termíny
+- poznámky ke struktuře a obsahu
+
+**Podle aktuální klientské nástěnky tam bývají hlavně tyto bloky:**
+- základní informace o klientovi a webu
+- kontakt
+- cena / záloha / doplatek
+- dokumenty ke stažení
+- základní informace o novém webu
+- podklady pro tvorbu webu
+- sdílená složka Google Drive
+- co je potřeba zvážit / probrat
+- technické funkce
+- moodboard
+- design jednotlivých stránek
+- sekce \`Proces tvorby webu\`
+
+**Rozhodovací logika:**
+- pokud je spolupráce potvrzená, vytvoř Milanote co nejdřív, aby klient hned viděl další kroky
+- pokud už nástěnka existuje, navazuj na ni a neudělej duplicitní verzi
+- pokud některé části ještě nejsou připravené, nech je jako připravené bloky k doplnění, ale zachovej přehlednost
+
+**Praktická role v procesu:**
+- vzniká po potvrzení spolupráce
+- je sdílená s klientem
+- klient na ní může průběžně sledovat, v jaké fázi tvorby se projekt nachází
+
+**Akce systému:**
+- vytvořit nebo připravit klientskou nástěnku
+- vložit základní bloky podle standardní struktury
+- doplnit odkazy na důležité zdroje
+- uložit odkaz na Milanote do interního přehledu zakázky
+
+**Důležité:**
+- klientská nástěnka má být srozumitelná i pro člověka, který není technický
+- nemá být zahlcená interními provozními detaily
+- LLM nemá do klientské verze promítat interní poznámky, které patří jen do interního řízení zakázky
+
+**Výstup:**
+- klient ví, v jaké je fázi a co se po něm čeká
+- existuje sdílená Milanote nástěnka s jasnou strukturou
+
+### 1.11 Google Drive a sběr podkladů
+
+**Typ kroku:**
+- vytvoření prostoru pro klientské materiály
+
+**Vstup:**
+- potvrzená spolupráce
+- připravená nebo založená projektová infrastruktura
+
+**Cíl kroku:**
+- vytvořit jasné místo, kam klient nahrává podklady
+- oddělit klientské soubory od komunikace a snížit chaos ve zdrojích
+
+**K čemu slouží Google Drive:**
+- jako hlavní sdílený prostor pro texty, fotky a další podklady
+- jako stabilní odkaz, který lze dát do Milanote i do komunikace s klientem
+- jako místo, odkud se dají podklady průběžně zpracovávat
+
+**Rozhodovací logika:**
+- pokud pro projekt ještě neexistuje sdílená složka, vytvoř ji hned po potvrzení spolupráce
+- pokud klient posílá podklady jiným kanálem, Google Drive stále drž jako hlavní referenční místo, pokud není dobrý důvod to udělat jinak
+- pokud už klient nějakou sdílenou složku má, ověř, zda je vhodná pro pokračování, a nevytvářej duplicitu bez důvodu
+
+**Praktická role v procesu:**
+- klient sem nahrává texty, fotky a další materiály
+- odkaz na složku má být snadno dohledatelný z Milanote i interního přehledu
+- Drive funguje jako hlavní organizační bod pro sběr podkladů, i když některé věci přijdou i jinudy
+
+**Akce systému:**
+- vytvořit nebo připravit Google Drive složku
+- pojmenovat ji srozumitelně podle projektu
+- propojit ji s Milanote a interním přehledem zakázky
+- připravit klientovi jasnou instrukci, kam má podklady nahrávat
+
+**Co vyžaduje schválení člověkem:**
+- nestandardní způsob sdílení podkladů
+- případy, kdy je lepší navázat na starší existující složku než zakládat novou
+
+**Výstup:**
+- existuje sdílená složka pro podklady
+- klient ví, kam má materiály nahrávat
+
+### 1.12 Podklady od klienta
+
+**Typ kroku:**
+- sběr a prvotní zpracování vstupních materiálů
+
+**Vstup:**
+- klient začíná dodávat podklady
+- existuje sdílená složka nebo jiný kanál pro jejich předání
+
+**Cíl kroku:**
+- shromáždit všechno potřebné pro samotnou stavbu webu
+- převést podklady do použitelné, přehledné a kontrolované podoby
+
+**Podklady mohou být:**
+- texty
+- fotky
+- logo
+- brand manuál
+- reference
+- nabídka služeb
+- formulace benefitů
+- technické údaje
+- kontaktní informace
+
+**Jak to běžně probíhá v praxi:**
+- podklady klient většinou nasdílí do sdílené složky, nebo je pošle e-mailem
+- klientské podklady mohou přijít i jinak, například přes Google Drive nebo Úschovnu
+- důležité je umět s nimi pracovat bez ohledu na kanál doručení
+- u fotek Lucie obvykle vezme celý balík a často z něj sama udělá užší výběr
+- vybrané fotky velikostně upraví
+- přidá jim názvy vhodné pro web / SEO
+- potom je rovnou nahraje do WordPressu
+- po nahrání je z počítače většinou smaže, případně si je nechává jen po dobu spolupráce
+
+**Rozhodovací logika:**
+- pokud jsou podklady kompletní a použitelné, přejdi k jejich zpracování a stavbě webu
+- pokud jsou podklady nekompletní, hned označ, co chybí, a vrať klientovi konkrétní seznam
+- pokud jsou podklady chaotické, nejdřív je roztřiď a převeď do použitelné struktury
+- pokud chybí klíčové texty nebo fotky, označ to jako pravděpodobnou blokaci další práce
+
+**Na co si dát pozor:**
+- často klient dodá podklady nekompletní nebo chaoticky
+- je potřeba včas říct, co ještě chybí
+- nejčastější zásek bývá opožděné dodání textů nebo fotek
+- často se čeká na fotky od fotografa
+- klientům bývá náročné dát dohromady texty, takže se tento krok snadno protáhne
+- všechny fotky pro web mají být před použitím zkomprimované na max. 500 kB a přejmenované podle obsahu fotky kvůli SEO
+
+**Akce systému:**
+- zapsat, jaké podklady dorazily a v jakém jsou stavu
+- roztřídit je na \`použitelné\`, \`k doplnění\`, \`k úpravě\`
+- připravit seznam chybějících položek
+- u fotek připravit workflow pro výběr, kompresi, přejmenování a nahrání
+
+**Co vyžaduje schválení člověkem:**
+- výběr citlivých nebo subjektivních materiálů, pokud není jasné, co použít
+- situace, kdy kvalita podkladů zásadně ovlivňuje výsledek a je potřeba klientovi citlivě vysvětlit problém
+
+**Výstup:**
+- připravený obsahový základ pro stavbu webu
+- seznam chybějících nebo problematických podkladů
+
+### 1.13 Příprava webového prostředí
+
+**Typ kroku:**
+- technické založení pracovního webu
+
+**Vstup:**
+- potvrzený rozsah zakázky
+- dostupné technické zázemí: doména, hosting, staging nebo developerská subdoména
+- základní rozhodnutí, kde se bude web tvořit
+
+**Cíl kroku:**
+- nachystat čistý a funkční základ pro tvorbu
+- vytvořit prostředí, na kterém lze bezpečně stavět web bez zbytečných technických blokací
+
+**Typicky probíhá:**
+- instalace WordPressu
+- instalace a aktivace Divi
+- základní nastavení prostředí
+- vytvoření pracovní verze webu
+- nastavení základních pluginů
+- příprava základní struktury stránek a menu
+
+**Rozhodovací logika:**
+- pokud se web tvoří na subdoméně nebo stagingu, nastav prostředí tak, aby nebylo veřejně indexované
+- pokud se tvoří přímo na ostré verzi, zvaž režim údržby a další ochranné kroky
+- pokud chybí technické přístupy, označ to jako blokaci a nepokračuj naslepo
+- pokud už existuje starší WordPress instalace, nejdřív ověř, zda se na ní má stavět, nebo zda je lepší čisté prostředí
+
+**Akce systému:**
+- připravit nebo založit WordPress prostředí
+- zapsat, kde se web fyzicky tvoří
+- uložit klíčové přístupy a technické poznámky do interního přehledu
+- označit, zda je hotové základní technické nastavení pro další fázi
+
+**Co vyžaduje schválení člověkem:**
+- rozhodnutí mezi čistou instalací a úpravou existujícího webu
+- zásahy do ostré verze webu bez jasného potvrzení
+
+**Výstup:**
+- technicky připravený web, na kterém se může začít stavět
+
+### 1.14 Příprava struktury webu
+
+**Typ kroku:**
+- návrh informační architektury webu
+
+**Vstup:**
+- vyhodnocený dotazník
+- cíle webu
+- dostupné podklady a rozsah zakázky
+
+**Cíl kroku:**
+- přeložit klientovy cíle do konkrétní architektury webu
+- rozhodnout, jaké stránky vzniknou hned a co může počkat do další fáze
+
+**Obvykle se navrhuje:**
+- homepage
+- o mně / o nás
+- služby
+- reference
+- kontakt
+- FAQ
+- prodejní nebo specializované stránky
+- případně blog, landing page nebo doplňkové sekce
+
+**Rozhodovací logika:**
+- pokud je cíl webu jasný, navrhni strukturu od hlavní konverzní logiky směrem k podpůrným stránkám
+- pokud klient chce příliš široký rozsah na start, odděl minimum pro spuštění od věcí, které mohou vzniknout později
+- pokud chybí texty nebo podklady, navrhni strukturu i tak, ale označ stránky, které budou potřebovat doplnění
+
+**Co má být výsledkem:**
+- jasný seznam stránek
+- pořadí a logika obsahu
+- rozhodnutí, co je nutné teď a co může vzniknout později
+- vazba mezi cílem webu a strukturou jednotlivých stránek
+
+**Akce systému:**
+- vytvořit přehled navržených stránek a jejich role
+- zapsat, které stránky jsou povinné, volitelné nebo odložené
+- promítnout strukturu do Milanote nebo interního přehledu
+
+**Co vyžaduje schválení člověkem:**
+- zásadní strategické rozhodnutí o rozsahu webu
+- situace, kdy klient potřebuje výraznější vedení v prioritách obsahu
+
+**Výstup:**
+- schválená nebo pracovně připravená struktura webu
+
+### 1.15 Moodboard a vizuální směr
+
+**Typ kroku:**
+- sladění estetiky a vizuálních pravidel projektu
+
+**Vstup:**
+- základní struktura webu
+- odpovědi klienta k vizuálním preferencím
+- inspirace, reference a případné brand podklady
+
+**Cíl kroku:**
+- sladit estetiku a očekávání ještě před samotnou detailní výrobou
+- vytvořit základ pro jednotný vizuální jazyk webu
+
+**Řeší se hlavně:**
+- atmosféra značky
+- barevnost
+- typografie
+- styl fotografií
+- inspirace
+- dojem, který má web vyvolávat
+
+**Rozhodovací logika:**
+- pokud klient má jasný vizuální směr, potvrď ho a převeď do konkrétních rozhodnutí
+- pokud klient jasno nemá, použij reference a moodboard jako nástroj pro zúžení směru
+- pokud jsou preference rozporné, označ to dřív, než začne detailní design
+
+**Smysl kroku:**
+- předejít pozdějšímu chaosu v designu
+- vyjasnit si vkus a hranice
+- vytvořit základ pro jednotný vizuální jazyk webu
+
+**Akce systému:**
+- shromáždit reference, moodboard a poznámky k vizuálu
+- zapsat hlavní vizuální pravidla projektu
+- propojit vizuální směr s konkrétními stránkami nebo sekcemi, kde je to důležité
+
+**Co vyžaduje schválení člověkem:**
+- finální volba subjektivně citlivého designového směru
+- situace, kdy klientovy preference nejsou konzistentní a je potřeba je interpretovat
+
+**Výstup:**
+- odsouhlasený nebo alespoň jasně nasměrovaný vizuální směr
+
+**Konkrétní checklist procesu tvorby webu podle Milanote (bez dělení na týdny):**
+
+**Příprava**
+1. klient vyplní dotazník,
+2. vytvoří se cenová nabídka a řeší se proplacení zálohové faktury,
+3. vytvoří se sdílené zázemí: Milanote + Google Drive,
+4. klient dodá podklady: logo, fotky, texty,
+5. řeší se doména a hosting nebo developerská subdoména,
+6. nastaví se režim údržby a zákaz indexace, pokud je to potřeba,
+7. vytvoří se moodboard pro nacítění atmosféry webu,
+8. vytvoří se obsahová struktura webu / architektura.
+
+**Design a vývoj**
+9. vznikne první designový návrh webu,
+10. proběhne zpětná vazba od klienta a konzultace obsahu,
+11. vytvoří se další stránky a naplní se obsahem,
+12. navrhne se stránka 404 a stránka výsledků vyhledávání,
+13. nastaví se favicon.
+
+**Technické nastavení**
+14. instalují se potřebné pluginy: bezpečnost, SEO, záloha apod.,
+15. řeší se GDPR: cookie lišta, zásady ochrany osobních údajů, obchodní podmínky,
+16. nastaví se základní SEO,
+17. doladí se responzivita na desktopu, mobilu a tabletu,
+18. napojí se sledovací kódy: Google Analytics, Facebook Pixel apod.
+
+**Testování a spuštění**
+19. otestuje se funkčnost webu: tlačítka, formuláře a důležité prvky,
+20. proběhne finální schválení a spuštění webu,
+21. pokud je nová doména, řeší se indexace v Google Search Console,
+22. předá se web klientovi: změna hlavního admina, přístupové údaje,
+23. proběhne zaškolení klienta: videonávody nebo domluva správy webu,
+24. uzavře se fakturace a požádá se o referenci.
+
+**Poznámka k použití:**
+- na Milanote je tento proces rozdělený do týdnů,
+- pro interní workflow Lucie je důležité hlavně **pořadí a návaznost kroků**, ne konkrétní týdenní rytmus,
+- v praxi se jde co nejrychleji podle dostupných podkladů a komunikace s klientem.
+
+### 1.16 Tvorba webu
+
+**Typ kroku:**
+- samotná realizace webu
+
+**Vstup:**
+- připravené technické prostředí
+- struktura webu
+- vizuální směr
+- dostupné podklady od klienta
+
+**Cíl kroku:**
+- převést strategii, obsah a vizuální směr do reálného webu
+- vytvořit funkční pracovní verzi, která se dá průběžně ukazovat a ladit
+
+**Běžný průběh tvorby:**
+- stavba homepage
+- stavba hlavních podstránek
+- práce s texty
+- práce s fotkami a grafikou
+- skládání sekcí
+- ladění CTA prvků
+- průběžné úpravy rozložení
+- nastavení mobilního zobrazení
+
+**Rozhodovací logika:**
+- pokud chybí kritický podklad pro konkrétní část, pokračuj tam, kde práce stát nemusí
+- pokud je potřeba rozhodnutí klienta, označ dotčenou část jako čekající, ale neblokuj celý web bez důvodu
+- nejdřív stav funkční kostru, detail ladit až na stabilním základu
+
+**Praktický princip:**
+- nejdřív se staví funkční kostra
+- potom se ladí detail
+- průběžně se kontroluje přehlednost a použitelnost
+
+**Akce systému:**
+- průběžně zapisovat stav rozpracovaných stránek
+- evidovat blokace po stránkách nebo sekcích
+- připravovat materiály pro klientskou zpětnou vazbu
+
+**Co vyžaduje schválení člověkem:**
+- zásadní změna směru oproti domluvené struktuře nebo designu
+- rozhodnutí v případech, kdy je potřeba interpretovat nejednoznačné zadání klienta
+
+**Výstup:**
+- funkční pracovní verze webu
+
+### 1.17 Průběžné ladění a revize
+
+**Typ kroku:**
+- iterativní dopracování webu podle zpětné vazby
+
+**Vstup:**
+- pracovní verze webu
+- zpětná vazba klienta
+- interní poznámky z průběžné kontroly
+
+**Cíl kroku:**
+- dostat web z pracovní verze do finální podoby
+- zpracovávat připomínky bez rozbití celkové logiky webu
+
+**Sem patří:**
+- úpravy podle zpětné vazby
+- doladění obsahu
+- změny v sekcích
+- výměna nebo doplnění fotek
+- úpravy detailů v designu
+- doladění mobilní verze
+
+**Rozhodovací logika:**
+- pokud jde o drobnou úpravu, proveď ji v rámci běžného kola revizí
+- pokud připomínka mění logiku stránky nebo významně rozšiřuje rozsah, označ ji jako možný scope change
+- pokud klient něco neschválil nebo se nevyjádřil, neprezentuj to jako finální stav
+
+**Důležité:**
+- hlídat, aby změny nerozbily celkovou logiku webu
+- mít jasno, co je drobná úprava a co už je rozšíření scope
+
+**Jak vypadá průběžná zpráva klientovi:**
+- Lucie se ozývá s dalším update webu
+- napíše, jaká stránka nebo část je nově hotová, například stránka \`O nás\`
+- podle potřeby krátce vysvětlí, proč použila některé konkrétní prvky nebo řešení
+- pokud něco chybí, rovnou doplní otázky nebo požadované podklady
+- připomene, že v Milanote je screenshot celé stránky
+- pošle odkaz na Milanote nástěnku, kde klient může komentovat konkrétní sekce
+
+**Akce systému:**
+- třídit připomínky na \`drobná úprava\`, \`čeká na podklad\`, \`možné rozšíření scope\`
+- vést seznam otevřených bodů do další revize
+- průběžně aktualizovat stav stránek
+
+**Výstup:**
+- téměř finální verze webu připravená na kontrolu
+
+### 1.18 Finalizace a kontrola
+
+**Typ kroku:**
+- finální QA před spuštěním nebo předáním
+
+**Vstup:**
+- téměř finální verze webu
+- finální obsah a schválené změny
+
+**Cíl kroku:**
+- ověřit, že je web připravený na spuštění nebo předání
+- zachytit chyby, které se při samotné stavbě snadno přehlédnou
+
+**Kontroluje se hlavně:**
+- správnost textů
+- správnost fotek a grafiky
+- funkčnost odkazů
+- formuláře
+- responzivita
+- vizuální konzistence
+- základní technické nastavení
+- případně favicon, patička, menu, CTA, kontakty
+
+**Praktická poznámka k finálnímu checklistu:**
+- finální checklist vychází z Milanote
+- nejdůležitější ruční kontrola navíc je opravdu proklikat všechna tlačítka a důležitá propojení
+- otestovat formuláře přímo na webu
+- projít další technická napojení, aby vše fungovalo i mimo samotný vizuál
+
+**Rozhodovací logika:**
+- pokud chyba brání spuštění nebo působí neprofesionálně, neoznačuj web jako finální
+- pokud jde o drobnost, rozhodni, zda ji lze opravit hned, nebo ji evidovat jako poslední bod před spuštěním
+
+**Akce systému:**
+- vytvořit finální checklist chyb a kontrol
+- zaznamenat, co je opraveno a co ještě zbývá
+- označit web jako připravený ke schválení nebo spuštění
+
+**Výstup:**
+- finální verze bez zjevných chyb
+
+### 1.19 Předání / spuštění webu
+
+**Typ kroku:**
+- uvedení webu do ostrého provozu a předání klientovi
+
+**Vstup:**
+- finálně zkontrolovaný web
+- schválení klienta nebo interní potvrzení připravenosti
+
+**Cíl kroku:**
+- dostat web do ostrého provozu
+- předat klientovi vše potřebné pro další používání a správu
+
+**Typicky probíhá:**
+- finální schválení klientem
+- přesun ze subdomény na ostrou doménu
+- kontrola po spuštění
+- poslední drobné doladění
+- předání přístupů nebo instrukcí
+
+**Co se při předání standardně řeší:**
+- odeslání přístupových údajů klientovi
+- zaslání odkazu na přihlášení do administrace
+- vysvětlení práce s uživateli ve WordPressu
+- upozornění na bezpečné zacházení s přístupy
+- změna hlavního admina webu a nutnost potvrzení v e-mailu
+- přidání klienta do Google Analytics
+- předání návodu ke správě webu
+- nabídka pravidelné správy
+- odeslání faktury na doplatek
+- poprosení o referenci
+
+**Aktuální logika handover e-mailu:**
+- slavnostně oznámit předání nového webu
+- dát klientce všechny důležité přístupy a instrukce
+- vysvětlit základní bezpečnostní pravidla
+- navést ji na videonávody
+- nabídnout správu webu jako navazující službu
+- uzavřít spolupráci fakturací a prosbou o referenci
+- nechat dveře otevřené pro další dotazy a úpravy
+
+**Ukázka:**
+- plný vzor předávacího e-mailu je dostupný přes tlačítko u tohoto kroku v HTML verzi workflow
+
+**Na co myslet:**
+- po spuštění se vždy znovu ověřuje funkčnost
+- některé chyby se projeví až na ostré verzi
+- je potřeba zkontrolovat, že klient opravdu dostal přístupy a pozvánky
+- u každého klienta se budou měnit konkrétní odkazy, rozsah správy a některé doplňující informace
+
+**Akce systému:**
+- uložit datum spuštění nebo předání
+- zapsat, jaké přístupy a návody byly předané
+- přepnout stav zakázky na \`předáno / spuštěno\`
+- otevřít navazující krok pro doplatek, správu nebo následnou péči
+
+**Co vyžaduje schválení člověkem:**
+- spuštění na ostré verzi, pokud existuje riziko nevratné chyby
+- citlivé předávací formulace nebo nestandardní rozsah předání
+
+**Výstup:**
+- veřejně spuštěný web nebo předaný finální projekt
+
+### 1.20 Následná péče
+
+**Typ kroku:**
+- post-launch podpora a další rozvoj
+
+**Vstup:**
+- spuštěný nebo předaný web
+- reakce klienta po předání
+
+**Cíl kroku:**
+- dořešit vše, co se objeví po spuštění
+- navázat další spolupráci tam, kde to dává smysl
+
+**Může zahrnovat:**
+- drobné úpravy
+- doplnění obsahu
+- technickou správu
+- další rozvoj webu
+- navazující spolupráci
+- převzetí pravidelné měsíční nebo průběžné správy
+
+**Co se často nabízí už při předání:**
+- pravidelná správa webu
+- aktualizace a zálohy
+- kontrola bezpečnosti
+- základní obsahové úpravy
+- další podpora podle potřeb klientky
+
+**Rozhodovací logika:**
+- pokud klient potřebuje jen drobné doladění, řeš ho jako navazující servis po spuštění
+- pokud chce průběžnou péči, převeď web do režimu správy
+- pokud přichází větší nové požadavky, založ je jako samostatný navazující rozsah práce
+
+**Akce systému:**
+- zapsat navazující požadavky po spuštění
+- rozlišit jednorázovou podporu od pravidelné správy
+- připravit další doporučený krok
+
+**Výstup:**
+- stabilní provoz a další péče podle domluvy
+
+---
+
+## 2. Správa webů
+
+Tahle část řeší jak jednorázové úpravy, tak průběžnou správu existujících webů.
+
+### 2.1 Přijetí požadavku
+
+**Typ kroku:**
+- kvalifikace servisního nebo správního požadavku
+
+**Vstup:**
+- zpráva od klienta nebo interní úkol ke správě webu
+
+**Cíl kroku:**
+- přesně pochopit, co se má na webu změnit
+- rozlišit jednorázovou úpravu od pravidelné správy
+
+**Je potřeba si ujasnit:**
+- na jakém webu se pracuje
+- co je cílem změny
+- jestli jde o jednorázovou úpravu nebo správu
+- co dodává klient
+- jestli je potřeba termín nebo priorita
+
+**Rozhodovací logika:**
+- pokud je zadání jasné, pokračuj kontrolou přístupů a přípravou zásahu
+- pokud je zadání nejasné, doptat se před zásahem, ne při práci naslepo
+- pokud jde jen o běžnou týdenní správu, použij pravidla pro režim správy webů, ne pro jednorázové editace
+
+**Akce systému:**
+- založit nebo aktualizovat úkol u konkrétního webu
+- zapsat typ požadavku: \`jednorázová úprava\`, \`správa\`, \`týdenní update\`
+- vytáhnout chybějící informace pro případné doplnění
+
+**Výstup:**
+- jasné zadání bez domýšlení
+
+### 2.2 Kontrola přístupu
+
+**Typ kroku:**
+- technická ověřovací fáze před zásahem
+
+**Vstup:**
+- potvrzené zadání k webu
+- uložené přístupy nebo potřeba je dohledat
+
+**Cíl kroku:**
+- ověřit, že je možné zásah provést
+- zamezit zdržení až v průběhu práce
+
+**Kontroluje se:**
+- přístup do WordPressu
+- případně hosting, doména nebo další služby
+- funkčnost uložených přístupů
+
+**Rozhodovací logika:**
+- pokud přístupy fungují, pokračuj na zálohu
+- pokud přístupy nefungují, označ to jako blokaci a připrav konkrétní požadavek na doplnění
+- pokud už jsou přístupy uložené ve vaultu, neptej se znovu bez důvodu
+
+**Akce systému:**
+- ověřit přihlášení
+- zapsat, jaké systémy jsou pro zásah potřeba
+- označit případné chybějící přístupy
+
+**Výstup:**
+- funkční přístupové zázemí nebo jasně pojmenovaná blokace
+
+### 2.3 Informování o zahájení zálohy
+
+**Typ kroku:**
+- komunikační mezikrok před zásahem
+
+**Vstup:**
+- funkční přístupy
+- připravený zásah do webu
+
+**Cíl kroku:**
+- určit, jestli se klientovi má předem hlásit zahájení zálohy
+
+**Rozhodovací logika:**
+- u jednorázových úprav může být vhodné klientovi předem stručně potvrdit, že nejdřív proběhne záloha
+- u pravidelné správy webů a updateů Lucie nechce samostatná hlášení o začátku ani dokončení zálohy; ozývat se má až s finálním výsledkem nebo skutečnou blokací
+- LLM má proto rozlišovat režim \`jednorázová úprava\` vs. \`správa webů\`
+
+**Akce systému:**
+- podle typu úkolu rozhodnout, zda poslat předběžné potvrzení
+- neprodukovat zbytečné mezistavy typu \`nepotvrzená záloha\`
+
+**Výstup:**
+- správně zvolený komunikační režim před zálohou
+
+### 2.4 Záloha před zásahem
+
+**Typ kroku:**
+- bezpečnostní příprava zásahu
+
+**Vstup:**
+- přístup do WordPressu
+- připravené zadání k úpravě nebo správě
+
+**Cíl kroku:**
+- mít možnost návratu v případě chyby
+- splnit povinný bezpečnostní standard před zásahem
+
+**Standardní postup:**
+- záloha přes All in One WP Migration
+- uložení do sdílené složky
+- ověření, že je záloha opravdu hotová
+- smazání staré duplicitní zálohy, pokud je potřeba
+
+**Důležité:**
+- bez hotové zálohy se nepokračuje
+- po vytvoření nové zálohy má v pluginu zůstat jen jedna nejnovější záloha
+- u některých webů nesmí záloha zůstat uložená přímo na webu / hostingu
+- sdílená složka je hlavní místo pro uchování zálohy
+
+**Rozhodovací logika:**
+- pokud záloha není ověřená, zásah se nespouští
+- pokud web patří mezi výjimky, kde nesmí zůstat kopie na hostingu, po stažení ji smaž i z webu
+- pokud nejde dokončit zálohu, označ to jako skutečnou blokaci
+
+**Akce systému:**
+- vytvořit zálohu
+- uložit ji do sdílené složky
+- ponechat jen nejnovější relevantní kopie podle pravidel
+- zapsat, kde je záloha uložená a zda web spadá do přísnějšího režimu
+
+**Výstup:**
+- bezpečně uložená a ověřená záloha
+
+### 2.5 Potvrzení hotové zálohy
+
+**Typ kroku:**
+- rozhodnutí, zda se záloha komunikuje navenek
+
+**Vstup:**
+- dokončená záloha
+- informace, zda jde o jednorázovou úpravu nebo správu webů
+
+**Cíl kroku:**
+- zvolit správný komunikační režim po záloze
+
+**Rozhodovací logika:**
+- u jednorázové úpravy může následovat potvrzení, že záloha proběhla, pokud to dává smysl v konkrétním zadání
+- u správy webů Lucii nezajímají samostatná hlášení o dokončení zálohy; očekává až finální zprávu s hotovým výsledkem
+- pokud se po záloze objeví problém, hlásí se až reálná blokace, ne samotný mezikrok
+
+**Akce systému:**
+- nepsat zbytečná samostatná hlášení u režimu správy webů
+- pokračovat rovnou do zásahu nebo reportovat skutečný problém
+
+**Výstup:**
+- komunikace po záloze odpovídá režimu úkolu
+
+### 2.6 Realizace úprav
+
+**Typ kroku:**
+- samotné provedení změn na webu
+
+**Vstup:**
+- hotová záloha
+- přesné zadání úpravy
+
+**Cíl kroku:**
+- provést přesně jen to, co bylo zadáno
+- zachovat stabilitu a zbytek webu nechat nedotčený
+
+**Zásady:**
+- měnit jen potřebnou část
+- nesahej na jiné části webu bez důvodu
+- nerozbít zbytek stránky
+- držet se přesného zadání
+
+**Běžné typy úprav:**
+- výměna textů
+- výměna nebo doplnění fotek
+- úprava sekcí
+- změna rozložení
+- doplnění formuláře
+- vložení videa
+- publikace nového obsahu
+- úprava prodejní stránky nebo landing page
+
+**Rozhodovací logika:**
+- pokud změna sahá mimo zadaný rozsah, zastav a vyžádej potvrzení
+- pokud omylem dojde k rozbití části webu, nejdřív to vrať nebo oprav, nehlásit polotovar
+- u správy webů dělat jen update a související kontrolu, ne další změny navíc
+
+**Akce systému:**
+- provést změnu
+- evidovat, co bylo upraveno
+- označit případné blokace nebo závislosti na dalších podkladech
+
+**Výstup:**
+- hotová změna na webu
+
+### 2.7 Zpracování podkladů a fotek
+
+**Typ kroku:**
+- příprava klientského obsahu pro nasazení na web
+
+**Vstup:**
+- dodané podklady od klienta
+- požadovaná změna na webu
+
+**Cíl kroku:**
+- převzít klientské podklady a dostat je do použitelné podoby
+
+**Typicky se dělá:**
+- výběr správných souborů
+- úprava rozměru nebo velikosti
+- nahrání na web
+- kontrola správného zobrazení
+- případné přejmenování nebo organizace podkladů
+
+**Rozhodovací logika:**
+- pokud jsou fotky nebo podklady nekvalitní, označ to dřív, než se promítnou do finálního webu
+- pokud je potřeba z více souborů vybrat vhodné varianty, eviduj výběr a zpracuj jen relevantní obsah
+- u fotek drž kompresi a přehledné názvy podle obsahu
+
+**Akce systému:**
+- optimalizovat a roztřídit podklady
+- nahrát je na web
+- ověřit, že se zobrazují správně
+
+**Výstup:**
+- čistě zpracovaný obsah použitý na webu
+
+### 2.8 Kontrola po úpravě
+
+**Typ kroku:**
+- post-change kontrola
+
+**Vstup:**
+- provedená úprava nebo update
+
+**Cíl kroku:**
+- ověřit, že změna je správně a nic dalšího se nerozbilo
+
+**Kontroluje se:**
+- funkčnost změny
+- vzhled na desktopu a mobilu
+- okolní sekce
+- formuláře a odkazy, pokud byly dotčené
+- rychlá vizuální kontrola celé relevantní stránky
+
+**Rozhodovací logika:**
+- pokud je problém opravitelný hned, oprav ho ještě před reportem
+- pokud jde o skutečnou blokaci, reportuj ji stručně a konkrétně
+- Lucie nechce reporty o nehotových mezistavech, když se to dá ještě opravit interně
+
+**Akce systému:**
+- zkontrolovat výsledek zásahu
+- opravit drobné problémy hned
+- zapsat finální stav
+
+**Výstup:**
+- potvrzený správný stav po zásahu
+
+### 2.9 Informování klienta
+
+**Typ kroku:**
+- uzavření úkolu směrem ke klientovi
+
+**Vstup:**
+- dokončená a zkontrolovaná úprava
+
+**Cíl kroku:**
+- uzavřít úkol a dát klientovi jasný výsledek
+
+**Typický obsah zprávy:**
+- že je hotovo
+- co bylo upraveno
+- případně stručná poznámka, pokud je potřeba ještě něco dodat nebo ověřit
+
+**Rozhodovací logika:**
+- u jednorázových úprav poslat po dokončení stručné a jasné shrnutí
+- u správy webů nepsat průběžné mezistavy; reportuj finální výsledek nebo skutečný problém
+- pokud existovala odchylka od zadání nebo chyba, u finálního reportu ji uveď stručně a konkrétně
+
+**Akce systému:**
+- připravit finální zprávu
+- uvést jen potvrzený stav
+- nezahltit klienta provozními detaily
+
+**Výstup:**
+- klient ví, že práce skončila a v jakém stavu
+
+### 2.10 Průběžná nebo opakovaná správa
+
+**Typ kroku:**
+- dlouhodobá péče o existující web
+
+**Vstup:**
+- aktivní správa webu po jednorázovém zásahu nebo jako samostatná služba
+
+**Cíl kroku:**
+- udržovat web dlouhodobě funkční a aktuální
+
+**Může zahrnovat:**
+- další obsahové úpravy
+- pravidelnou technickou údržbu
+- aktualizace WordPressu, pluginů a šablon
+- průběžné změny dle klientových potřeb
+
+**Rozhodovací logika:**
+- rozlišovat, co je běžná správa a co už nový samostatný úkol
+- u opakované správy udržovat návaznost v interním přehledu, ne řešit vše jen v chatu
+
+**Akce systému:**
+- vést historii zásahů
+- průběžně aktualizovat stav webu a známé citlivé body
+- připravovat doporučené další kroky
+
+**Výstup:**
+- průběžně udržovaný web
+
+### 2.11 Týdenní správa webů
+
+**Typ kroku:**
+- pravidelný maintenance režim pro více webů
+
+**Vstup:**
+- seznam spravovaných webů
+- týdenní cyklus správy
+- interní přehled / ClickUp stav
+
+**Cíl kroku:**
+- pravidelně projít spravované weby a držet je v bezpečném a aktuálním stavu
+
+**Běžný týdenní rámec:**
+- záloha
+- kontrola WordPressu
+- kontrola pluginů
+- kontrola šablon
+- opatrná práce s citlivými pluginy
+- záznam výsledku do přehledu
+
+**Důležité provozní zásady:**
+- první položka checklistu je vždy záloha
+- u správy webů se neposílají zbytečné průběžné reporty
+- reportuje se finální výsledek nebo skutečný problém
+- vše podstatné se průběžně zapisuje do ClickUpu
+- u dat používat formát \`DD. MM. YYYY\`
+
+**Rozhodovací logika:**
+- každý web přepnout v ClickUpu z \`to do\` přes \`in progress\` do \`complete\` podle skutečného stavu
+- citlivé pluginy aktualizovat opatrně a ručně tam, kde to pravidla vyžadují
+- pokud se problém dá opravit bez Lucie, nejdřív to zkusit interně
+- pokud je web blokovaný, zapsat konkrétní blokaci místo nejasného mezistavu
+
+**Akce systému:**
+- projít web po webu
+- vytvořit a ověřit zálohu
+- provést update WordPressu, pluginů a šablon podle pravidel daného webu
+- zapsat přehled a provozní log do ClickUpu
+- na konci poslat jen finální report
+
+**Výstup:**
+- dokončená týdenní správa konkrétních webů s jasně zapsaným výsledkem
+
+---
+
+## 3. Šablony
+
+Tahle část popisuje workflow tvorby a prodeje šablon.
+
+### 3.1 Návrh tématu a cílové skupiny
+
+**Typ kroku:**
+- produktová definice šablony
+
+**Vstup:**
+- nápad na novou šablonu nebo produktovou příležitost
+
+**Cíl kroku:**
+- rozhodnout, komu je šablona určená a jaký problém řeší
+- vymezit jasný produktový rámec ještě před návrhem struktury
+
+**Je potřeba si ujasnit:**
+- cílovou skupinu
+- obor nebo typ podnikání
+- jaký výsledek má šablona zákaznici přinést
+- jaká má být úroveň jednoduchosti použití
+
+**Rozhodovací logika:**
+- pokud není jasná cílová skupina, neřeš ještě detailní design
+- pokud šablona řeší příliš mnoho různých typů zákaznic najednou, zvaž zúžení záběru
+
+**Akce systému:**
+- zapsat cílovou skupinu, hlavní problém a očekávaný výsledek
+- připravit stručné produktové zadání
+
+**Výstup:**
+- jasné zadání pro šablonu
+
+### 3.2 Návrh konceptu šablony
+
+**Typ kroku:**
+- převod produktového zadání do struktury
+
+**Vstup:**
+- definované téma a cílová skupina
+
+**Cíl kroku:**
+- přeložit nápad do konkrétní struktury šablony
+
+**Definuje se:**
+- jaké stránky bude šablona obsahovat
+- jaké sekce budou univerzální
+- jak bude fungovat homepage
+- jaké prvky musí jít snadno přepsat
+
+**Rozhodovací logika:**
+- pokud má být šablona snadno použitelná, drž strukturu přehlednou a nezahlcuj ji výjimkami
+- pokud nějaký prvek dává smysl jen pro úzký případ, zvaž, zda patří do základu, nebo do volitelné varianty
+
+**Akce systému:**
+- navrhnout seznam stránek, sekcí a opakovatelných bloků
+- rozlišit povinné a volitelné části
+
+**Výstup:**
+- návrh struktury šablony
+
+### 3.3 Tvorba designového směru
+
+**Typ kroku:**
+- definice vizuální identity produktu
+
+**Vstup:**
+- schválený koncept šablony
+- reference a inspirace
+
+**Cíl kroku:**
+- vytvořit vizuální základ pro celou šablonu
+
+**Řeší se:**
+- barvy
+- typografie
+- layout
+- atmosféra značky
+- styl fotografií
+- vizuální konzistence napříč stránkami
+
+**Rozhodovací logika:**
+- design má být atraktivní, ale zároveň dost univerzální pro další klientky
+- pokud je směr příliš navázaný na jeden konkrétní případ, uprav ho do obecnější podoby
+
+**Akce systému:**
+- shromáždit vizuální reference
+- zapsat hlavní designová pravidla šablony
+- propojit designový směr s konkrétními typy stránek
+
+**Výstup:**
+- designový směr, podle kterého se bude šablona stavět
+
+### 3.4 Stavba šablony v Divi / WordPressu
+
+**Typ kroku:**
+- samotná realizace produktu
+
+**Vstup:**
+- struktura šablony
+- designový směr
+
+**Cíl kroku:**
+- vytvořit funkční a esteticky použitelnou šablonu
+
+**Zahrnuje:**
+- stavbu jednotlivých stránek
+- sekce
+- opakovatelné bloky
+- stylování
+- mobilní verze
+- případné šablony pro blog nebo další typy obsahu
+
+**Rozhodovací logika:**
+- stavět tak, aby byly klíčové části znovupoužitelné
+- nepřidávat zbytečnou technickou složitost, která by zhoršila používání šablony
+
+**Akce systému:**
+- vytvořit pracovní verzi šablony
+- zapisovat, které části jsou hotové a které ještě chybí
+
+**Výstup:**
+- pracovní verze šablony
+
+### 3.5 Nastavení univerzálnosti
+
+**Typ kroku:**
+- produktové zjednodušení a zobecnění
+
+**Vstup:**
+- pracovní verze šablony
+
+**Cíl kroku:**
+- zajistit, aby šla šablona snadno přizpůsobit dalším klientkám
+
+**Je potřeba hlídat:**
+- jednoduchou editaci textů
+- snadnou výměnu fotek
+- přehlednou strukturu
+- čistý systém sekcí
+- minimum zbytečně složitých prvků
+
+**Rozhodovací logika:**
+- pokud je něco navázané na konkrétní ukázkový obsah, uprav to do obecnější formy
+- pokud by běžná uživatelka měla problém část šablony sama přepsat, je potřeba ji zjednodušit
+
+**Akce systému:**
+- projít problematická místa z pohledu editovatelnosti
+- označit prvky, které potřebují zjednodušit nebo zobecnit
+
+**Výstup:**
+- šablona, která není navázaná jen na jeden konkrétní případ
+
+### 3.6 Testování použitelnosti
+
+**Typ kroku:**
+- QA a UX kontrola produktu
+
+**Vstup:**
+- zobecněná pracovní verze šablony
+
+**Cíl kroku:**
+- ověřit, že je šablona dobře použitelná v praxi
+
+**Kontroluje se:**
+- přehlednost
+- funkčnost jednotlivých částí
+- snadnost úprav
+- chování na mobilu
+- jestli je práce se šablonou dost intuitivní
+
+**Rozhodovací logika:**
+- pokud šablona funguje technicky, ale špatně se upravuje, není ještě připravená k prodeji
+- pokud se opakují stejné UX problémy, vrať je do předchozí fáze úprav
+
+**Akce systému:**
+- zaznamenat nalezené problémy
+- rozdělit je na technické, obsahové a UX
+- připravit finální seznam oprav
+
+**Výstup:**
+- odladěná a použitelná šablona
+
+### 3.7 Příprava pro prodej nebo předání
+
+**Typ kroku:**
+- packaging produktu
+
+**Vstup:**
+- odladěná šablona
+
+**Cíl kroku:**
+- připravit šablonu tak, aby šla bezpečně předat nebo prodávat
+
+**Může zahrnovat:**
+- export / balíček
+- návod k použití
+- ukázkový obsah
+- prodejní podklady
+- screenshoty nebo prezentaci
+
+**Rozhodovací logika:**
+- pokud má být šablona prodávaná opakovaně, důraz je na samostatně použitelné balení a jasný návod
+- pokud jde o individuální předání, přizpůsob rozsah dokumentace konkrétní klientce
+
+**Akce systému:**
+- připravit exporty a související podklady
+- zapsat, co je součást balíčku
+- zkontrolovat, že nic klíčového nechybí
+
+**Výstup:**
+- finální balíček šablony
+
+### 3.8 Prodej a následná práce se šablonou
+
+**Typ kroku:**
+- dlouhodobá správa produktu po vydání
+
+**Vstup:**
+- hotová šablona připravená k prodeji nebo předaná zákaznici
+
+**Cíl kroku:**
+- udržet šablonu jako živý produkt
+
+**Následuje:**
+- komunikace se zájemci
+- podpora po koupi
+- úpravy podle zpětné vazby
+- další verze
+- odvozené varianty nebo doplňky
+
+**Rozhodovací logika:**
+- pokud se opakují stejné dotazy nebo problémy, promítni je do další verze produktu nebo návodu
+- pokud se ukáže nová příležitost, může z ní vzniknout odvozená šablona nebo doplněk
+
+**Akce systému:**
+- evidovat zpětnou vazbu a časté problémy
+- navrhovat další verze nebo rozšíření
+- oddělovat jednorázovou podporu od produktových změn
+
+**Výstup:**
+- dlouhodobě použitelný a rozvíjený produkt
+
+---
+`;
+
+    const resources = {
+      dotaznik: {
+        title: 'Dotazník k tvorbě webu',
+        kind: 'dokument + textová ukázka',
+        description: 'Aktuální dotazník, který Lucie posílá po první poptávce.',
+        preview: `Jaké služby/produkty nabízíte?\n\nJaké máte výhody oproti konkurenci?\n\nJak dlouho již Váš byznys funguje?\n\nJaké jsou Vaše cíle webové prezentace?\nCo očekáváte, že web přinese, jaký je hlavní důvod jeho tvorby, jaké jsou vedlejší očekávání?\n\nJaká je Vaše představa do budoucna? Plánujete nějaké další online aktivity?\nNapř. online program, členská sekce, …\n\nExistuje již nějaká vizuální komunikace?\nLogo, barvy, vizitky apod.\n\nKdo jsou Vaši zákazníci/klienti?\n\n...`,
+        links: [
+          { label: 'Otevřít DOCX', href: 'workflow-prilohy/Dotaznik-ke-tvorbe-webu-Lucie-Tomanova.docx' },
+          { label: 'Otevřít textovou verzi', href: 'workflow-prilohy/dotaznik-ke-tvorbe-webu.txt' }
+        ]
+      },
+      prvniEmail: {
+        title: 'Vzor prvního e-mailu po poptávce',
+        kind: 'textová ukázka',
+        description: 'E-mail, ve kterém Lucie děkuje za poptávku a posílá dotazník.',
+        preview: `Zdravím [jméno],\n\nděkuji za zprávu. Ráda s Vámi navážu spolupráci.\n\nV příloze posílám dotazník, ve kterém se ptám na základní informace o novém webu. Čím podrobněji na dané otázky odpovíte, tím lépe. Po obdržení dotazníku vytvořím nezávaznou cenovou nabídku nebo si ještě podle potřeby zavoláme pro upřesnění detailů...`,
+        links: [
+          { label: 'Otevřít vzor', href: 'workflow-prilohy/vzor-prvni-email-po-poptavce.txt' }
+        ]
+      },
+      nabidkaEmail: {
+        title: 'Vzor e-mailu s cenovou nabídkou',
+        kind: 'textová ukázka',
+        description: 'Šablona e-mailu, ve kterém Lucie posílá odhad ceny a času tvorby webu.',
+        preview: `Dobrý den, [jméno klientky],\n\nještě jednou děkuji za vyplnění dotazníku a všech informací o novém webu. Prošla jsem si odpovědi a posílám odhad ceny a času tvorby webu.\n\nNový web:\n- Hlavní cíl: [cíl webu]\n- Design: [zvolené barvy, dojem z webu]\n- Rozsah webu: [počet stránek]\n...`,
+        links: [
+          { label: 'Otevřít vzor', href: 'workflow-prilohy/vzor-emailu-s-cenovou-nabidkou.txt' }
+        ]
+      },
+      predaniEmail: {
+        title: 'Vzor předávacího e-mailu',
+        kind: 'textová ukázka',
+        description: 'E-mail pro slavnostní předání hotového webu klientce.',
+        preview: `Dobrý den, [jméno klientky],\ndoufám že se máte fajn. Ráda bych Vám tímto slavnostně předala nový web [adresa webu].\n\nPřístupové údaje\nNechala jsem Vám poslat přístupové údaje k webu na [e-mailová adresa klienta]...`,
+        links: [
+          { label: 'Otevřít vzor', href: 'workflow-prilohy/vzor-predavaciho-emailu.txt' }
+        ]
+      }
+    };
+
+    const stepResourceMap = {
+      '1.2 První odpověď klientovi': ['prvniEmail'],
+      '1.3 Zaslání dotazníku': ['dotaznik'],
+      '1.5 Příprava cenové nabídky': ['nabidkaEmail'],
+      '1.6 Odeslání cenové nabídky a navazující komunikace': ['nabidkaEmail'],
+      '1.19 Předání / spuštění webu': ['predaniEmail']
+    };
+
+    function parseMarkdown(md) {
+      const lines = md.split(/\r?\n/);
+      const doc = { title: '', quotes: [], lead: '', sections: [] };
+      let currentSection = null;
+      let currentStep = null;
+
+      const pushParagraph = (text) => {
+        if (!text) return;
+        const target = currentStep || currentSection;
+        if (!target) return;
+        target.content.push({ type: 'p', text });
+      };
+
+      const pushBullet = (text, indent = 0) => {
+        const target = currentStep || currentSection;
+        if (!target) return;
+        const content = target.content;
+        if (indent > 0 && content.length) {
+          const last = content[content.length - 1];
+          if (last.type === 'ul') {
+            const parent = last.items[last.items.length - 1];
+            if (parent) {
+              parent.children ||= [];
+              parent.children.push(text);
+              return;
+            }
+          }
+        }
+        if (content.length && content[content.length - 1].type === 'ul' && indent === 0) {
+          content[content.length - 1].items.push({ text, children: [] });
+        } else {
+          content.push({ type: 'ul', items: [{ text, children: [] }] });
+        }
+      };
+
+      for (const raw of lines) {
+        const line = raw.trimEnd();
+        const trimmed = line.trim();
+        if (!trimmed || trimmed === '---') continue;
+        if (trimmed.startsWith('# ')) {
+          doc.title = trimmed.slice(2).trim();
+          continue;
+        }
+        if (trimmed.startsWith('> ')) {
+          doc.quotes.push(trimmed.slice(2).trim());
+          continue;
+        }
+        if (trimmed.startsWith('## ')) {
+          currentSection = { title: trimmed.slice(3).trim(), content: [], steps: [] };
+          doc.sections.push(currentSection);
+          currentStep = null;
+          continue;
+        }
+        if (trimmed.startsWith('### ')) {
+          currentStep = { title: trimmed.slice(4).trim(), content: [] };
+          currentSection?.steps.push(currentStep);
+          continue;
+        }
+        const ordered = trimmed.match(/^\d+\.\s+(.*)$/);
+        if (ordered && !currentStep) {
+          currentSection?.content.push({ type: 'ol', text: ordered[1].trim() });
+          continue;
+        }
+        const bullet = line.match(/^(\s*)-\s+(.*)$/);
+        if (bullet) {
+          pushBullet(bullet[2].trim(), bullet[1].length);
+          continue;
+        }
+        pushParagraph(trimmed);
+      }
+
+      doc.lead = doc.quotes.join(' ');
+      return doc;
+    }
+
+    function slugify(text) {
+      return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function highlight(text, query) {
+      if (!query) return escapeHtml(text);
+      const safe = escapeHtml(text);
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'ig');
+      return safe.replace(regex, '<mark>$1</mark>');
+    }
+
+    const doc = parseMarkdown(markdown);
+    const titleEl = document.getElementById('doc-title');
+    const leadEl = document.getElementById('doc-lead');
+    const quoteEl = document.getElementById('doc-quote');
+    const statGrid = document.getElementById('stat-grid');
+    const sectionsEl = document.getElementById('sections');
+    const navList = document.getElementById('nav-list');
+    const filterPills = document.getElementById('filter-pills');
+    const searchInput = document.getElementById('search');
+    const emptyState = document.getElementById('empty-state');
+    const resourceModal = document.getElementById('resource-modal');
+    const resourceModalTitle = document.getElementById('resource-modal-title');
+    const resourceModalDescription = document.getElementById('resource-modal-description');
+    const resourceModalLinks = document.getElementById('resource-modal-links');
+    const resourceModalPreview = document.getElementById('resource-modal-preview');
+
+    titleEl.textContent = doc.title;
+    leadEl.textContent = doc.lead;
+    quoteEl.textContent = doc.quotes.join(' ');
+
+    const totalSteps = doc.sections.reduce((sum, sec) => sum + sec.steps.length, 0);
+    const stats = [
+      { value: doc.sections.length, label: 'sekcí' },
+      { value: totalSteps, label: 'detailních kroků' },
+      { value: doc.sections.find(s => /^1\./.test(s.title))?.steps.length || 0, label: 'kroků pro nové weby' },
+      { value: doc.sections.find(s => /^2\./.test(s.title))?.steps.length || 0, label: 'kroků pro správu' }
+    ];
+
+    statGrid.innerHTML = stats.map(stat => `
+      <div class="stat">
+        <strong>${stat.value}</strong>
+        <span>${stat.label}</span>
+      </div>
+    `).join('');
+
+    const filters = [
+      { key: 'all', label: 'Vše' },
+      ...doc.sections.map((section, index) => ({ key: `section-${index}`, label: section.title.replace(/^\d+\.\s*/, '') }))
+    ];
+
+    filterPills.innerHTML = filters.map((filter, index) => `
+      <button type="button" class="${index === 0 ? 'active' : ''}" data-filter="${filter.key}">${filter.label}</button>
+    `).join('');
+
+    navList.innerHTML = doc.sections.map((section, index) => `
+      <a class="nav-link" href="#${slugify(section.title)}" data-nav="section-${index}">${section.title}</a>
+    `).join('');
+
+    function renderContentBlocks(content, query) {
+      return content.map(block => {
+        if (block.type === 'p') return `<p>${highlight(block.text, query)}</p>`;
+        if (block.type === 'ol') return `<p>${highlight(block.text, query)}</p>`;
+        if (block.type === 'ul') {
+          const items = block.items.map(item => {
+            const children = item.children?.length
+              ? `<ul>${item.children.map(child => `<li>${highlight(child, query)}</li>`).join('')}</ul>`
+              : '';
+            return `<li>${highlight(item.text, query)}${children}</li>`;
+          }).join('');
+          return `<ul>${items}</ul>`;
+        }
+        return '';
+      }).join('');
+    }
+
+    function renderStepResources(stepTitle) {
+      const resourceIds = stepResourceMap[stepTitle] || [];
+      if (!resourceIds.length) return '';
+      return `
+        <div class="step-resources">
+          ${resourceIds.map(id => {
+            const resource = resources[id];
+            return `<button type="button" class="step-resource-btn" data-resource="${escapeHtml(id)}">Ukázka: ${escapeHtml(resource.title)}</button>`;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function openResourceModal(resourceId) {
+      const resource = resources[resourceId];
+      if (!resource) return;
+      resourceModalTitle.textContent = resource.title;
+      resourceModalDescription.textContent = `${resource.kind} · ${resource.description}`;
+      resourceModalLinks.innerHTML = resource.links.map(link => `<a class="resource-link" href="${encodeURI(link.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`).join('');
+      resourceModalPreview.textContent = resource.preview || '';
+      resourceModal.classList.add('open');
+      resourceModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeResourceModal() {
+      resourceModal.classList.remove('open');
+      resourceModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    function renderSections(query = '', filter = 'all') {
+      const normalizedQuery = query.trim().toLowerCase();
+      let visibleCount = 0;
+
+      sectionsEl.innerHTML = doc.sections.map((section, index) => {
+        const haystack = [section.title, ...section.content.map(c => c.text || c.items?.map(i => i.text).join(' ') || ''), ...section.steps.flatMap(step => [step.title, ...step.content.map(c => c.text || c.items?.map(i => i.text).join(' ') || '')])].join(' ').toLowerCase();
+        const matchesFilter = filter === 'all' || filter === `section-${index}`;
+        const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
+        const hidden = !(matchesFilter && matchesQuery);
+        if (!hidden) visibleCount += 1;
+
+        return `
+          <section id="${slugify(section.title)}" class="card section ${hidden ? 'hidden' : ''}" data-filter="section-${index}">
+            <div class="section-head">
+              <div>
+                <div class="section-meta">${section.steps.length} kroků</div>
+                <h2>${highlight(section.title, normalizedQuery)}</h2>
+              </div>
+            </div>
+            ${section.content.length ? `<div class="section-intro">${renderContentBlocks(section.content, normalizedQuery)}</div>` : ''}
+            <div class="steps">
+              ${section.steps.map((step, stepIndex) => `
+                <details class="step" ${normalizedQuery ? 'open' : stepIndex < 2 ? 'open' : ''}>
+                  <summary>
+                    <span class="step-badge">${escapeHtml(step.title.split(' ')[0])}</span>
+                    <span class="step-title">${highlight(step.title.replace(/^\S+\s*/, ''), normalizedQuery)}</span>
+                    <span class="step-toggle">+</span>
+                  </summary>
+                  <div class="step-body">
+                    ${renderContentBlocks(step.content, normalizedQuery)}
+                    ${renderStepResources(step.title)}
+                  </div>
+                </details>
+              `).join('')}
+            </div>
+          </section>
+        `;
+      }).join('');
+
+      emptyState.style.display = visibleCount ? 'none' : 'block';
+      document.querySelectorAll('#filter-pills button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.toggle('active', filter !== 'all' && link.dataset.nav === filter);
+      });
+    }
+
+    let activeFilter = 'all';
+    renderSections();
+
+    filterPills.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-filter]');
+      if (!button) return;
+      activeFilter = button.dataset.filter;
+      renderSections(searchInput.value, activeFilter);
+    });
+
+    searchInput.addEventListener('input', () => renderSections(searchInput.value, activeFilter));
+
+    document.getElementById('expand-all').addEventListener('click', () => {
+      document.querySelectorAll('details.step').forEach(detail => detail.open = true);
+    });
+
+    document.getElementById('collapse-all').addEventListener('click', () => {
+      document.querySelectorAll('details.step').forEach(detail => detail.open = false);
+    });
+
+    sectionsEl.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-resource]');
+      if (!button) return;
+      openResourceModal(button.dataset.resource);
+    });
+
+    document.getElementById('resource-modal-close').addEventListener('click', closeResourceModal);
+    resourceModal.addEventListener('click', (event) => {
+      if (event.target === resourceModal) closeResourceModal();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && resourceModal.classList.contains('open')) closeResourceModal();
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        const active = document.querySelector(`.nav-link[href="#${id}"]`);
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+        active?.classList.add('active');
+      });
+    }, { rootMargin: '-25% 0px -60% 0px', threshold: 0 });
+
+    document.querySelectorAll('.section').forEach(section => observer.observe(section));
+  </script>
+</body>
+</html>
